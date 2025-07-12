@@ -15,12 +15,27 @@ public class Task {
         this.id = ++idSerial;
     }
 
-    // constructor for updateTask
+    // constructor for update Task & Subtask
     public Task(int id, String name, String description, TaskStatus status) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.status = status;
+    }
+
+    // constructor for update Epic
+    public Task(int id, String name, String description) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public TaskStatus getStatus() {
+        return status;
     }
 
     @Override
@@ -34,14 +49,6 @@ public class Task {
     @Override
     public int hashCode() {
         return Objects.hash(id);
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public TaskStatus getStatus() {
-        return status;
     }
 
     @Override

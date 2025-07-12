@@ -8,17 +8,19 @@ public class Epic extends Task{
         this.subtasksIds = new ArrayList<>();
     }
 
-    // constructor for updateEpic
-    public Epic(int id, String name, String description, TaskStatus status) {
-        super(id, name, description, status);
+    // constructor for update Epic
+    // Виталий, пришлось передавать явно список айди сабтасков. Это ок?
+    public Epic(int id, String name, String description, ArrayList<Integer> subtasksIds) {
+        super(id, name, description);
+        this.subtasksIds = subtasksIds;
     }
 
     public void addSubtask(int subtaskId) {
         this.subtasksIds.add(subtaskId);
     }
 
-    public void removeSubtask(int subtaskId) {
-        this.subtasksIds.remove(id);
+    public void removeSubtask(Integer subtaskId) {
+        this.subtasksIds.remove(subtaskId);
     }
 
     public void deleteAllSubtasks() {

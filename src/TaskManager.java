@@ -8,7 +8,7 @@ public class TaskManager {
     private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
 
 
-    public void updateEpicStatus(int epicId) {
+    private void updateEpicStatus(int epicId) {
         Epic epic = epics.getOrDefault(epicId, null);
         if (epic != null) {
             int newCount = 0;
@@ -81,6 +81,7 @@ public class TaskManager {
     public void updateEpic(Epic updatedEpic) {
         int updatedEpicId = updatedEpic.getId();
         epics.put(updatedEpicId, updatedEpic);
+        updateEpicStatus(updatedEpicId);
     }
 
     public void updateSubtask(Subtask updatedSubtask) {
@@ -90,7 +91,6 @@ public class TaskManager {
         if (updatedSubtaskEpic != null) {
             int updatedSubtaskId = updatedSubtask.getId();
             subtasks.put(updatedSubtaskId, updatedSubtask);
-            updatedSubtaskEpic.addSubtask(updatedSubtaskId);
             updateEpicStatus(updatedSubtaskEpicId);
         }
         // Виталий, Надо ли делать проверку, что у обновленного сабтаска будет epicId своего епика, а не другого?
@@ -123,7 +123,11 @@ public class TaskManager {
     public void deleteSubtaskById(int id) {
         Subtask deletedSubtask = subtasks.remove(id);
         int epicId = deletedSubtask.getEpicId();
-        updateEpicStatus(epicId);
+        Epic epic = getEpicById(epicId);
+        if (epic != null) {
+            epic.removeSubtask(id);
+            updateEpicStatus(epicId);
+        }
     }
 
     public HashMap<Integer, Task> getTasks() {

@@ -7,8 +7,9 @@ public class Subtask extends Task{
     }
 
     // constructor for updateSubtask
-    public Subtask(int id, String name, String description, TaskStatus status) {
+    public Subtask(int id, String name, String description, TaskStatus status, int epicId) {
         super(id, name, description, status);
+        this.epicId = epicId;
     }
 
     public int getEpicId() {
