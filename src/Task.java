@@ -1,18 +1,18 @@
 import java.util.Objects;
 
 public class Task {
-
-    protected static int idSerial = 0;
+    // Специально оставляю поля protected, чтобы можно было использовать их в toString() потомков.
+    // Если не нужно переопределять toString() потомков, тогда поменяю на private
     protected final int id;
     protected String name;
     protected String description;
     protected TaskStatus status;
 
-    public Task(String name, String description) {
+    public Task(int id, String name, String description) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.status = TaskStatus.NEW;
-        this.id = ++idSerial;
     }
 
     // constructor for update Task & Subtask
@@ -23,19 +23,16 @@ public class Task {
         this.status = status;
     }
 
-    // constructor for update Epic
-    public Task(int id, String name, String description) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-    }
-
     public int getId() {
         return id;
     }
 
     public TaskStatus getStatus() {
         return status;
+    }
+
+    public void setStatus(TaskStatus status) {
+        this.status = status;
     }
 
     @Override
