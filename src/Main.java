@@ -7,23 +7,16 @@ public class Main {
         System.out.println("Поехали!");
 
         TaskManager taskManager = new TaskManager();
-        Integer currentId = TaskManager.getIdSerial();
         // create tests
-        int testTaskId = taskManager.createNewTask(new Task(currentId, "Test Task", "Description for test task"));
-        currentId = TaskManager.getIdSerial();
-        int anotherTestTaskId = taskManager.createNewTask(new Task(currentId,"Another test task", "Another description"));
-        currentId = TaskManager.getIdSerial();
-        int task3Id = taskManager.createNewTask(new Task(currentId, "Task 3", "Description for Task 3"));
+        int testTaskId = taskManager.createNewTask(new Task("Test Task", "Description for test task"));
+        int anotherTestTaskId = taskManager.createNewTask(new Task("Another test task", "Another description"));
+        int task3Id = taskManager.createNewTask(new Task("Task 3", "Description for Task 3"));
 
-        currentId = TaskManager.getIdSerial();
-        int testEpicId = taskManager.createNewEpic(new Epic(currentId, "Test Epic", "Description for test Epic"));
-        currentId = TaskManager.getIdSerial();
-        int epic2Id = taskManager.createNewEpic(new Epic(currentId, "Epic #2", "Description for Epic#2"));
+        int testEpicId = taskManager.createNewEpic(new Epic("Test Epic", "Description for test Epic"));
+        int epic2Id = taskManager.createNewEpic(new Epic("Epic #2", "Description for Epic#2"));
 
-        currentId = TaskManager.getIdSerial();
-        Integer testSubtaskId = taskManager.createNewSubtask(new Subtask(currentId, "Test Subtask", "Description of test subtask", testEpicId));
-        currentId = TaskManager.getIdSerial();
-        Integer subtask2Id = taskManager.createNewSubtask(new Subtask(currentId, "Subtask 2", "Desc for subtask 2", testEpicId));
+        Integer testSubtaskId = taskManager.createNewSubtask(new Subtask("Test Subtask", "Description of test subtask", testEpicId));
+        Integer subtask2Id = taskManager.createNewSubtask(new Subtask("Subtask 2", "Desc for subtask 2", testEpicId));
         // check create
         System.out.println("##### CREATE TESTS #####");
         printAllTasks(taskManager.getTasks());
@@ -33,13 +26,11 @@ public class Main {
         // get & update tests
         int taskIdForUpdateId = taskManager.getTaskById(3).getId();
         taskManager.updateTask(new Task(taskIdForUpdateId, "Updated Task 3", "Updated description for Task 3", TaskStatus.IN_PROGRESS));
-        currentId = TaskManager.getIdSerial();
-        int task4Id = taskManager.createNewTask(new Task(currentId, "Task 4", "Description for Task 4"));
+        int task4Id = taskManager.createNewTask(new Task("Task 4", "Description for Task 4"));
         System.out.println("##### TASK UPD #####");
         printAllTasks(taskManager.getTasks());
 
-        currentId = TaskManager.getIdSerial();
-        int subtask3Id = taskManager.createNewSubtask(new Subtask(currentId, "Subtask #3", "Description for Subtask #3", epic2Id));
+        int subtask3Id = taskManager.createNewSubtask(new Subtask("Subtask #3", "Description for Subtask #3", epic2Id));
         int getEpicForUpdateId = taskManager.getEpicById(5).getId();
         ArrayList<Integer> epicForUpdateSubtasksIds = taskManager.getEpicById(getEpicForUpdateId).getSubtasksIds();
         taskManager.updateEpic(new Epic(getEpicForUpdateId, "Epic #2 updated", "Updated Description for Epic#2", epicForUpdateSubtasksIds));
@@ -77,6 +68,10 @@ public class Main {
         printAllTasks(taskManager.getTasks());
         printAllEpics(taskManager.getEpics());
         printAllSubtasks(taskManager.getSubtasks());
+
+        taskManager.deleteAllTasks();
+        System.out.println("##### DELETE ALL TASKS #####");
+        printAllTasks(taskManager.getTasks());
 
     }
 

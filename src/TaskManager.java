@@ -6,11 +6,7 @@ public class TaskManager {
     private final HashMap<Integer, Task> tasks = new HashMap<>();
     private final HashMap<Integer, Epic> epics = new HashMap<>();
     private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
-    private static Integer idSerial = 1;
-
-    public static Integer getIdSerial() {
-        return idSerial;
-    }
+    private int idSerial = 1;
 
     public ArrayList<Subtask> getEpicSubtasks(int epicId) {
         ArrayList<Subtask> epicSubtasks = new ArrayList<>();
@@ -24,17 +20,17 @@ public class TaskManager {
     }
 
     public int createNewTask(Task newTask) {
-        int newTaskId = newTask.getId();
-        tasks.put(newTaskId, newTask);
+        newTask.setId(this.idSerial);
+        tasks.put(newTask.getId(), newTask);
         incrementTaskId();
-        return newTaskId;
+        return newTask.getId();
     }
 
     public int createNewEpic(Epic newEpic) {
-        int newEpicId = newEpic.getId();
-        epics.put(newEpicId, newEpic);
+        newEpic.setId(this.idSerial);
+        epics.put(newEpic.getId(), newEpic);
         incrementTaskId();
-        return newEpicId;
+        return newEpic.getId();
     }
 
     public Integer createNewSubtask(Subtask newSubtask) {
@@ -42,12 +38,12 @@ public class TaskManager {
         Epic createdSubtaskEpic = getEpicById(createdSubtaskEpicId);
         // if Epic with provided epicId does not exist
         if (createdSubtaskEpic != null) {
-            int newSubtaskId = newSubtask.getId();
-            subtasks.put(newSubtaskId, newSubtask);
-            createdSubtaskEpic.addSubtask(newSubtaskId);
+            newSubtask.setId(this.idSerial);
+            subtasks.put(newSubtask.getId(), newSubtask);
+            createdSubtaskEpic.addSubtask(newSubtask.getId());
             updateEpicStatus(createdSubtaskEpicId);
             incrementTaskId();
-            return newSubtaskId;
+            return newSubtask.getId();
         }
         return null;
     }
@@ -108,27 +104,15 @@ public class TaskManager {
     }
 
     public ArrayList<Task> getTasks() {
-        ArrayList<Task> allTasks = new ArrayList<>();
-        for (int taskId : tasks.keySet()) {
-            allTasks.add(tasks.get(taskId));
-        }
-        return allTasks;
+        return new ArrayList<>(tasks.values());
     }
 
     public ArrayList<Epic> getEpics() {
-        ArrayList<Epic> allEpics = new ArrayList<>();
-        for (int epicId : epics.keySet()) {
-            allEpics.add(epics.get(epicId));
-        }
-        return allEpics;
+        return new ArrayList<>(epics.values());
     }
 
     public ArrayList<Subtask> getSubtasks() {
-        ArrayList<Subtask> allSubtasks = new ArrayList<>();
-        for (int subtaskId : subtasks.keySet()) {
-            allSubtasks.add(subtasks.get(subtaskId));
-        }
-        return allSubtasks;
+        return new ArrayList<>(subtasks.values());
     }
 
     public void deleteAllTasks() {
@@ -175,6 +159,6 @@ public class TaskManager {
     }
 
     private void incrementTaskId() {
-        ++idSerial;
+        ++this.idSerial;
     }
 }
