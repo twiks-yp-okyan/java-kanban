@@ -1,3 +1,5 @@
+package task;
+
 import java.util.Objects;
 
 public class Task {
@@ -12,7 +14,7 @@ public class Task {
         this.status = TaskStatus.NEW;
     }
 
-    // constructor for update Task & Subtask
+    // constructor for update task.Task & task.Subtask
     public Task(int id, String name, String description, TaskStatus status) {
         this.id = id;
         this.name = name;
@@ -20,7 +22,7 @@ public class Task {
         this.status = status;
     }
 
-    // constructor for update Epic
+    // constructor for update task.Epic
     public Task(int id, String name, String description) {
         this.id = id;
         this.name = name;
@@ -58,7 +60,7 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Task{" +
+        return "task.Task{" +
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +

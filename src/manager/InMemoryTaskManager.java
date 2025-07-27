@@ -1,16 +1,30 @@
+package manager;
+
+import task.Epic;
+import task.Subtask;
+import task.Task;
+import task.TaskStatus;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class TaskManager {
+public class InMemoryTaskManager implements TaskManager {
 
     private final HashMap<Integer, Task> tasks = new HashMap<>();
     private final HashMap<Integer, Epic> epics = new HashMap<>();
     private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
     private int idSerial = 1;
+    private final ArrayList<Task> history = new ArrayList<>();
 
+    @Override
+    public ArrayList<Task> getHistory() {
+        return history;
+    }
+
+    @Override
     public ArrayList<Subtask> getEpicSubtasks(int epicId) {
         ArrayList<Subtask> epicSubtasks = new ArrayList<>();
-        Epic epic = getEpicById(epicId);
+        Epic epic = epics.getOrDefault(epicId, null); //getEpicById(epicId); - пришлось заменить на метод коллекции для корректной работы истории просмотров
         if (epic != null) {
             for (int subtaskId : epic.getSubtasksIds()) {
                 epicSubtasks.add(subtasks.get(subtaskId));
@@ -19,6 +33,7 @@ public class TaskManager {
         return epicSubtasks;
     }
 
+    @Override
     public int createNewTask(Task newTask) {
         newTask.setId(this.idSerial);
         tasks.put(newTask.getId(), newTask);
@@ -26,6 +41,7 @@ public class TaskManager {
         return newTask.getId();
     }
 
+    @Override
     public int createNewEpic(Epic newEpic) {
         newEpic.setId(this.idSerial);
         epics.put(newEpic.getId(), newEpic);
@@ -33,10 +49,11 @@ public class TaskManager {
         return newEpic.getId();
     }
 
+    @Override
     public Integer createNewSubtask(Subtask newSubtask) {
         int createdSubtaskEpicId = newSubtask.getEpicId();
-        Epic createdSubtaskEpic = getEpicById(createdSubtaskEpicId);
-        // if Epic with provided epicId does not exist
+        Epic createdSubtaskEpic = epics.getOrDefault(createdSubtaskEpicId, null); //getEpicById(createdSubtaskEpicId); - аналогично
+        // if task.Epic with provided epicId does not exist
         if (createdSubtaskEpic != null) {
             newSubtask.setId(this.idSerial);
             subtasks.put(newSubtask.getId(), newSubtask);
@@ -48,21 +65,24 @@ public class TaskManager {
         return null;
     }
 
+    @Override
     public void updateTask(Task updatedTask) {
         int updatedTaskId = updatedTask.getId();
         tasks.put(updatedTaskId, updatedTask);
     }
 
+    @Override
     public void updateEpic(Epic updatedEpic) {
         int updatedEpicId = updatedEpic.getId();
         epics.put(updatedEpicId, updatedEpic);
         updateEpicStatus(updatedEpicId);
     }
 
+    @Override
     public void updateSubtask(Subtask updatedSubtask) {
         int updatedSubtaskEpicId = updatedSubtask.getEpicId();
-        Epic updatedSubtaskEpic = getEpicById(updatedSubtaskEpicId);
-        // if Epic with provided epicId does not exist
+        Epic updatedSubtaskEpic = epics.getOrDefault(updatedSubtaskEpicId, null); // getEpicById(updatedSubtaskEpicId); - аналогично
+        // if task.Epic with provided epicId does not exist
         if (updatedSubtaskEpic != null) {
             int updatedSubtaskId = updatedSubtask.getId();
             subtasks.put(updatedSubtaskId, updatedSubtask);
@@ -70,22 +90,33 @@ public class TaskManager {
         }
     }
 
+    @Override
     public Task getTaskById(int id) {
-        return tasks.getOrDefault(id, null);
+        Task task = tasks.getOrDefault(id, null);
+        this.addViewToHistory(task);
+        return task;
     }
 
+    @Override
     public Epic getEpicById(int id) {
-        return epics.getOrDefault(id, null);
+        Epic epic = epics.getOrDefault(id, null);
+        this.addViewToHistory(epic);
+        return epic;
     }
 
+    @Override
     public Subtask getSubtaskById(int id) {
-        return subtasks.getOrDefault(id, null);
+        Subtask subtask = subtasks.getOrDefault(id, null);
+        this.addViewToHistory(subtask);
+        return subtask;
     }
 
+    @Override
     public void deleteTaskById(int id) {
         tasks.remove(id);
     }
 
+    @Override
     public void deleteEpicById(int id) {
         Epic deletedEpic = epics.remove(id);
         for (int subtaskId : deletedEpic.getSubtasksIds()) {
@@ -93,32 +124,38 @@ public class TaskManager {
         }
     }
 
+    @Override
     public void deleteSubtaskById(int id) {
         Subtask deletedSubtask = subtasks.remove(id);
         int epicId = deletedSubtask.getEpicId();
-        Epic epic = getEpicById(epicId);
+        Epic epic = epics.getOrDefault(epicId, null); // getEpicById(epicId); - аналогично
         if (epic != null) {
             epic.removeSubtask(id);
             updateEpicStatus(epicId);
         }
     }
 
+    @Override
     public ArrayList<Task> getTasks() {
         return new ArrayList<>(tasks.values());
     }
 
+    @Override
     public ArrayList<Epic> getEpics() {
         return new ArrayList<>(epics.values());
     }
 
+    @Override
     public ArrayList<Subtask> getSubtasks() {
         return new ArrayList<>(subtasks.values());
     }
 
+    @Override
     public void deleteAllTasks() {
         tasks.clear();
     }
 
+    @Override
     public void deleteAllSubtasks() {
         subtasks.clear();
         for (int epicId : epics.keySet()) {
@@ -128,6 +165,7 @@ public class TaskManager {
         }
     }
 
+    @Override
     public void deleteAllEpics() {
         epics.clear();
         deleteAllSubtasks();
@@ -160,5 +198,12 @@ public class TaskManager {
 
     private void incrementTaskId() {
         ++this.idSerial;
+    }
+
+    private void addViewToHistory(Task task) {
+        if (this.history.size() == 10) {
+            history.removeFirst();
+        }
+        history.add(task);
     }
 }
