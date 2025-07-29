@@ -97,10 +97,23 @@ public class Main {
         taskIdForHistoryTest = taskManager.getEpicById(5);
         taskIdForHistoryTest = taskManager.getTaskById(3);
         taskIdForHistoryTest = taskManager.getTaskById(1);
+        taskManager.updateTask(new Task(1, "WWWWWWW", "ASSSSSSSS"));
         taskIdForHistoryTest = taskManager.getTaskById(1);
 
         System.out.println("##### VIEW HISTORY #####");
         printViewHistory(taskManager.getHistory());
+
+        System.out.println("#####  #####");
+        System.out.println(taskManager.getTaskById(1));
+        Task brandNewTask = new Task(1, "Brand New Task", "Desc", TaskStatus.NEW);
+        System.out.println(brandNewTask);
+        int brandNewTaskId = taskManager.createNewTask(brandNewTask);
+        System.out.println(taskManager.getTaskById(1));
+
+        printAllTasks(taskManager.getTasks());
+
+        System.out.println("#####  #####");
+        System.out.println(brandNewTask);
 
     }
 
