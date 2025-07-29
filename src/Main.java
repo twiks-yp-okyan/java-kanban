@@ -1,4 +1,6 @@
+import manager.HistoryManager;
 import manager.InMemoryTaskManager;
+import manager.Managers;
 import manager.TaskManager;
 import task.Epic;
 import task.Subtask;
@@ -13,7 +15,7 @@ public class Main {
 
         System.out.println("Поехали!");
 
-        TaskManager taskManager = new InMemoryTaskManager();
+        TaskManager taskManager = Managers.getDefault();
         // create tests
         int testTaskId = taskManager.createNewTask(new Task("Test task.Task", "Description for test task"));
         int anotherTestTaskId = taskManager.createNewTask(new Task("Another test task", "Another description"));

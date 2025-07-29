@@ -14,11 +14,11 @@ public class InMemoryTaskManager implements TaskManager {
     private final HashMap<Integer, Epic> epics = new HashMap<>();
     private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
     private int idSerial = 1;
-    private final ArrayList<Task> history = new ArrayList<>();
+    private final HistoryManager historyManager = Managers.getDefaultHistory();
 
     @Override
     public ArrayList<Task> getHistory() {
-        return history;
+        return historyManager.getHistory();
     }
 
     @Override
@@ -93,21 +93,21 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task getTaskById(int id) {
         Task task = tasks.getOrDefault(id, null);
-        this.addViewToHistory(task);
+        historyManager.add(task);
         return task;
     }
 
     @Override
     public Epic getEpicById(int id) {
         Epic epic = epics.getOrDefault(id, null);
-        this.addViewToHistory(epic);
+        historyManager.add(epic);
         return epic;
     }
 
     @Override
     public Subtask getSubtaskById(int id) {
         Subtask subtask = subtasks.getOrDefault(id, null);
-        this.addViewToHistory(subtask);
+        historyManager.add(subtask);
         return subtask;
     }
 
@@ -198,12 +198,5 @@ public class InMemoryTaskManager implements TaskManager {
 
     private void incrementTaskId() {
         ++this.idSerial;
-    }
-
-    private void addViewToHistory(Task task) {
-        if (this.history.size() == 10) {
-            history.removeFirst();
-        }
-        history.add(task);
     }
 }
