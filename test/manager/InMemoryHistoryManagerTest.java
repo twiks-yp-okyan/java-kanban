@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import task.Task;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -41,7 +41,7 @@ class InMemoryHistoryManagerTest {
         Task taskBeforeUpdate = taskManager.getTaskById(taskId);
         taskManager.updateTask(new Task(taskId, "Task", "Description for Task after Update"));
         Task taskAfterUpdate = taskManager.getTaskById(taskId);
-        ArrayList<Task> history = taskManager.getHistory();
+        List<Task> history = taskManager.getHistory();
 
         assertEquals(2, history.size());
         assertNotEquals(history.get(0).getDescription(), history.get(1).getDescription());

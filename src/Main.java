@@ -8,6 +8,7 @@ import task.Task;
 import task.TaskStatus;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
 
@@ -41,23 +42,23 @@ public class Main {
 
         taskManager.updateTask(new Task(taskIdForUpdateId, "Updated task.Task 3", "Updated description for task.Task 3", TaskStatus.IN_PROGRESS));
         int task4Id = taskManager.createNewTask(new Task("task.Task 4", "Description for task.Task 4"));
-        System.out.println("##### TASK UPD #####");
-        printAllTasks(taskManager.getTasks());
+//        System.out.println("##### TASK UPD #####");
+//        printAllTasks(taskManager.getTasks());
 
         int subtask3Id = taskManager.createNewSubtask(new Subtask("task.Subtask #3", "Description for task.Subtask #3", epic2Id));
         int getEpicForUpdateId = taskManager.getEpicById(5).getId();
         ArrayList<Integer> epicForUpdateSubtasksIds = taskManager.getEpicById(getEpicForUpdateId).getSubtasksIds();
         taskManager.updateEpic(new Epic(getEpicForUpdateId, "task.Epic #2 updated", "Updated Description for task.Epic#2", epicForUpdateSubtasksIds));
-        System.out.println("##### EPIC UPD #####");
-        printAllEpics(taskManager.getEpics());
+//        System.out.println("##### EPIC UPD #####");
+//        printAllEpics(taskManager.getEpics());
 
         int getSubtaskForUpdateId = taskManager.getSubtaskById(9).getId();
         taskManager.updateSubtask(new Subtask(getSubtaskForUpdateId, "task.Subtask #3 updated", "Updated Description for task.Subtask #3", TaskStatus.IN_PROGRESS, epic2Id));
         taskManager.updateSubtask(new Subtask(6, "Test task.Subtask updated", "Updated Description of test subtask", TaskStatus.DONE, testEpicId));
         taskManager.updateSubtask(new Subtask(7, "task.Subtask 2 updated", "Updated Desc for subtask 2", TaskStatus.DONE, testEpicId));
-        System.out.println("##### SUBTASK UPD #####");
-        printAllSubtasks(taskManager.getSubtasks());
-        printAllEpics(taskManager.getEpics());
+//        System.out.println("##### SUBTASK UPD #####");
+//        printAllSubtasks(taskManager.getSubtasks());
+//        printAllEpics(taskManager.getEpics());
 
         // getAllEpicSubtasks
         ArrayList<Subtask> epicSubtasks = taskManager.getEpicSubtasks(4);
@@ -67,21 +68,21 @@ public class Main {
         }
 
         // delete tests
-        taskManager.deleteTaskById(2);
-        System.out.println("##### TASK DELETE #####");
-        printAllTasks(taskManager.getTasks());
+//        taskManager.deleteTaskById(2);
+//        System.out.println("##### TASK DELETE #####");
+//        printAllTasks(taskManager.getTasks());
 
-        taskManager.deleteSubtaskById(7);
-        taskManager.deleteSubtaskById(9);
-        System.out.println("##### SUBTASK DELETE #####");
-        printAllSubtasks(taskManager.getSubtasks());
-        printAllEpics(taskManager.getEpics());
+//        taskManager.deleteSubtaskById(7);
+//        taskManager.deleteSubtaskById(9);
+//        System.out.println("##### SUBTASK DELETE #####");
+//        printAllSubtasks(taskManager.getSubtasks());
+//        printAllEpics(taskManager.getEpics());
 
-        taskManager.deleteEpicById(4);
-        System.out.println("##### DELETE TESTS #####");
-        printAllTasks(taskManager.getTasks());
-        printAllEpics(taskManager.getEpics());
-        printAllSubtasks(taskManager.getSubtasks());
+//        taskManager.deleteEpicById(4);
+//        System.out.println("##### DELETE TESTS #####");
+//        printAllTasks(taskManager.getTasks());
+//        printAllEpics(taskManager.getEpics());
+//        printAllSubtasks(taskManager.getSubtasks());
 
 //        taskManager.deleteAllTasks();
 //        System.out.println("##### DELETE ALL TASKS #####");
@@ -104,9 +105,9 @@ public class Main {
         printViewHistory(taskManager.getHistory());
 
         System.out.println("#####  #####");
-        System.out.println(taskManager.getTaskById(1));
+//        System.out.println(taskManager.getTaskById(1));
         Task brandNewTask = new Task(1, "Brand New Task", "Desc", TaskStatus.NEW);
-        System.out.println(brandNewTask);
+//        System.out.println(brandNewTask);
         int brandNewTaskId = taskManager.createNewTask(brandNewTask);
         System.out.println(taskManager.getTaskById(1));
 
@@ -135,7 +136,7 @@ public class Main {
         }
     }
 
-    public static void printViewHistory(ArrayList<Task> history) {
+    public static void printViewHistory(List<Task> history) {
         for (Task task : history) {
             System.out.println(task);
         }
