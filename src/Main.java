@@ -36,7 +36,7 @@ public class Main {
         // get & update tests
         int taskIdForUpdateId = taskManager.getTaskById(3).getId();
 
-        System.out.println("##### VIEW HISTORY #####");
+        System.out.println("##### VIEW HISTORY 1 #####");
         printViewHistory(taskManager.getHistory());
 
 
@@ -62,23 +62,59 @@ public class Main {
 
         // getAllEpicSubtasks
         ArrayList<Subtask> epicSubtasks = taskManager.getEpicSubtasks(4);
-        System.out.println("-----epic subtasks-----");
-        for (Subtask epicSubtask : epicSubtasks) {
-            System.out.println(epicSubtask);
-        }
+//        System.out.println("-----epic subtasks-----");
+//        for (Subtask epicSubtask : epicSubtasks) {
+//            System.out.println(epicSubtask);
+//        }
+        System.out.println("##### UPDATE & CREATE NEW ITEMS #####");
+        printAllTasks(taskManager.getTasks());
+        printAllEpics(taskManager.getEpics());
+        printAllSubtasks(taskManager.getSubtasks());
+
+        System.out.println("##### VIEW HISTORY 2 #####");
+        printViewHistory(taskManager.getHistory());
+
+        Task taskForHistoryTest = taskManager.getSubtaskById(6);
+        taskForHistoryTest = taskManager.getSubtaskById(7);
+        taskForHistoryTest = taskManager.getSubtaskById(7);
+        taskForHistoryTest = taskManager.getSubtaskById(6);
+        taskForHistoryTest = taskManager.getSubtaskById(9);
+
+        taskForHistoryTest = taskManager.getTaskById(1);
+        taskForHistoryTest = taskManager.getTaskById(3);
+        taskForHistoryTest = taskManager.getTaskById(8);
+        taskForHistoryTest = taskManager.getTaskById(3);
+        taskForHistoryTest = taskManager.getTaskById(2);
+        taskForHistoryTest = taskManager.getTaskById(1);
+        taskForHistoryTest = taskManager.getTaskById(7);
+        taskForHistoryTest = taskManager.getTaskById(1);
+        taskManager.updateTask(new Task(1, "WWWWWWW", "ASSSSSSSS"));
+        taskForHistoryTest = taskManager.getTaskById(1);
+
+        taskForHistoryTest = taskManager.getEpicById(5);
+        taskForHistoryTest = taskManager.getEpicById(5);
+        taskForHistoryTest = taskManager.getEpicById(5);
+
+        System.out.println("##### VIEW HISTORY 3 #####");
+        printViewHistory(taskManager.getHistory());
+
+        System.out.println("##### ITEMS BEFORE DELETE #####");
+        printAllTasks(taskManager.getTasks());
+        printAllEpics(taskManager.getEpics());
+        printAllSubtasks(taskManager.getSubtasks());
 
         // delete tests
-//        taskManager.deleteTaskById(2);
+        taskManager.deleteTaskById(2);
 //        System.out.println("##### TASK DELETE #####");
 //        printAllTasks(taskManager.getTasks());
 
-//        taskManager.deleteSubtaskById(7);
-//        taskManager.deleteSubtaskById(9);
+        taskManager.deleteSubtaskById(7);
+        taskManager.deleteSubtaskById(9);
 //        System.out.println("##### SUBTASK DELETE #####");
 //        printAllSubtasks(taskManager.getSubtasks());
 //        printAllEpics(taskManager.getEpics());
 
-//        taskManager.deleteEpicById(4);
+        taskManager.deleteEpicById(4);
 //        System.out.println("##### DELETE TESTS #####");
 //        printAllTasks(taskManager.getTasks());
 //        printAllEpics(taskManager.getEpics());
@@ -87,34 +123,25 @@ public class Main {
 //        taskManager.deleteAllTasks();
 //        System.out.println("##### DELETE ALL TASKS #####");
 //        printAllTasks(taskManager.getTasks());
-
-        System.out.println("##### VIEW HISTORY #####");
-        printViewHistory(taskManager.getHistory());
-
-        Task taskIdForHistoryTest = taskManager.getTaskById(1);
-        taskIdForHistoryTest = taskManager.getTaskById(3);
-        taskIdForHistoryTest = taskManager.getTaskById(8);
-        taskIdForHistoryTest = taskManager.getTaskById(3);
-        taskIdForHistoryTest = taskManager.getEpicById(5);
-        taskIdForHistoryTest = taskManager.getTaskById(3);
-        taskIdForHistoryTest = taskManager.getTaskById(1);
-        taskManager.updateTask(new Task(1, "WWWWWWW", "ASSSSSSSS"));
-        taskIdForHistoryTest = taskManager.getTaskById(1);
-
-        System.out.println("##### VIEW HISTORY #####");
-        printViewHistory(taskManager.getHistory());
-
-        System.out.println("#####  #####");
-//        System.out.println(taskManager.getTaskById(1));
-        Task brandNewTask = new Task(1, "Brand New Task", "Desc", TaskStatus.NEW);
-//        System.out.println(brandNewTask);
-        int brandNewTaskId = taskManager.createNewTask(brandNewTask);
-        System.out.println(taskManager.getTaskById(1));
-
+        System.out.println("##### ITEMS AFTER DELETE #####");
         printAllTasks(taskManager.getTasks());
+        printAllEpics(taskManager.getEpics());
+        printAllSubtasks(taskManager.getSubtasks());
 
-        System.out.println("#####  #####");
-        System.out.println(brandNewTask);
+//        System.out.println("#####  #####");
+//        System.out.println(taskManager.getTaskById(1));
+//        Task brandNewTask = new Task(1, "Brand New Task", "Desc", TaskStatus.NEW);
+//        System.out.println(brandNewTask);
+//        int brandNewTaskId = taskManager.createNewTask(brandNewTask);
+//        System.out.println(taskManager.getTaskById(1));
+
+//        printAllTasks(taskManager.getTasks());
+
+//        System.out.println("#####  #####");
+//        System.out.println(brandNewTask);
+
+        System.out.println("##### VIEW HISTORY 4 #####");
+        printViewHistory(taskManager.getHistory());
 
     }
 
