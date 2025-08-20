@@ -5,10 +5,9 @@ import task.Task;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private final ArrayList<Task> history = new ArrayList<>();
-
     private final HashMap<Integer, Node> nodeMap = new HashMap<>();
     private Node head;
     private Node tail;
@@ -62,15 +61,20 @@ public class InMemoryHistoryManager implements HistoryManager {
     private void removeNode(Node node) {
         nodeMap.remove(node.item.getId());
 
-        if (node == head) {
-            head = node.next;
-            head.prev = null;
-        } else if (node == tail) {
-            tail = node.prev;
-            tail.next = null;
+        if (head.equals(tail)) {
+            head = null;
+            tail = null;
         } else {
-            node.prev.next = node.next;
-            node.next.prev = node.prev;
+            if (node.equals(head)) {
+                head = node.next;
+                head.prev = null;
+            } else if (node.equals(tail)) {
+                tail = node.prev;
+                tail.next = null;
+            } else {
+                node.prev.next = node.next;
+                node.next.prev = node.prev;
+            }
         }
     }
 
@@ -83,6 +87,14 @@ public class InMemoryHistoryManager implements HistoryManager {
             this.prev = prev;
             this.item = item;
             this.next = next;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            if (obj == null || getClass() != obj.getClass()) return false;
+            Node anotherNode = (Node) obj;
+            return Objects.equals(this.item, anotherNode.item);
         }
     }
 }

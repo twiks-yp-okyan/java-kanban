@@ -13,6 +13,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryTaskManagerTest {
 
+    // TO DO
+    // change task id via it's setter and check task manager
+
     private TaskManager taskManager;
 
     @BeforeEach
@@ -126,6 +129,34 @@ class InMemoryTaskManagerTest {
         assertEquals(TaskStatus.NEW, taskManager.getEpicById(epic2Id).getStatus());
         // check empty of subtasks collection in manager
         assertEquals(0, taskManager.getSubtasks().size());
+    }
+
+    @Test
+    public void shouldRemoveSubtaskIdFromEpicAfterSubtaskDelete() {
+        int epicId = taskManager.createNewEpic(new Epic("Epic", "Description"));
+        int subtaskId = taskManager.createNewSubtask(new Subtask("Subtask 1", "Description for Subtask 1", epicId));
+        int subtask2Id = taskManager.createNewSubtask(new Subtask("Subtask 2", "Description for Subtask 2", epicId));
+
+        taskManager.deleteSubtaskById(subtaskId);
+        assertFalse(taskManager.getEpicSubtasks(epicId).contains(taskManager.getSubtaskById(subtaskId)));
+    }
+
+    @Test
+    public void shouldCheckTaskIdByItsSetterAndNoChangesInTaskManager() {
+        /*
+        Виталий, привет!
+        Тест сделал для проверки гипотезы, что id таска сменится и в менеджере, если сменить его через сеттер самого таска.
+        Мне кажется это вообще стремным, но пока идей по исправлению, кроме как переписать весь менеджер, нет))
+        Можешь пожалуйста как-то прокомментировать этот момент?
+         */
+        int taskId = taskManager.createNewTask(new Task("Task", "Description"));
+        Task task = taskManager.getTaskById(taskId);
+        task.setId(999);
+        assertTrue(taskManager.getTasks().contains(task));
+
+        Task taskByOldId = taskManager.getTaskById(taskId);
+        Task taskByNewId = taskManager.getTaskById(999);
+        assertNotEquals(taskByOldId, taskByNewId);
     }
 
 }
