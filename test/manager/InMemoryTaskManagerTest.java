@@ -8,7 +8,6 @@ import task.Task;
 import task.TaskStatus;
 
 import java.util.ArrayList;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryTaskManagerTest {
