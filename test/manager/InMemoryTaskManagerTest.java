@@ -13,9 +13,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryTaskManagerTest {
 
-    // TO DO
-    // change task id via it's setter and check task manager
-
     private TaskManager taskManager;
 
     @BeforeEach
