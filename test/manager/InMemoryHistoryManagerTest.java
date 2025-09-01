@@ -1,5 +1,6 @@
 package manager;
 
+import exceptions.ManagerSaveException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import task.Task;
@@ -18,7 +19,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    public void shouldExceedTenViewsInHistory() {
+    public void shouldExceedTenViewsInHistory() throws ManagerSaveException {
         for (int i = 0; i < 13; i++) {
             int taskId = taskManager.createNewTask(new Task("Task " + i, "Description for task " + i));
         }
@@ -29,7 +30,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    public void shouldNotContainsDuplicates() {
+    public void shouldNotContainsDuplicates() throws ManagerSaveException {
         int taskId = taskManager.createNewTask(new Task("Task", "Description"));
         for (int i = 0; i < 13; i++) {
             Task taskForHistory = taskManager.getTaskById(taskId);
@@ -39,7 +40,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    public void shouldKeepLastTaskVersionInHistory() {
+    public void shouldKeepLastTaskVersionInHistory() throws ManagerSaveException {
         int taskId = taskManager.createNewTask(new Task("Task", "Description"));
         Task taskBeforeUpdate = taskManager.getTaskById(taskId);
         taskManager.updateTask(new Task(taskId, "Task", "Description for Task after Update"));
@@ -50,7 +51,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    public void shouldRemoveFromHistoryAfterDeleteFromTaskManager() {
+    public void shouldRemoveFromHistoryAfterDeleteFromTaskManager() throws ManagerSaveException {
         int taskId = taskManager.createNewTask(new Task("Task", "Description"));
         int task2Id = taskManager.createNewTask(new Task("Task 2", "Description 2"));
         Task taskForHistory = taskManager.getTaskById(taskId);

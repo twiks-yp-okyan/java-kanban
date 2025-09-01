@@ -4,10 +4,17 @@ import exceptions.ManagerSaveException;
 import task.*;
 
 import java.io.*;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
+    private final String filename;
+
+    public FileBackedTaskManager(String filename) {
+        this.filename = filename;
+    }
+
     @Override
     public int createNewTask(Task newTask) throws ManagerSaveException {
         int taskId = super.createNewTask(newTask);
@@ -97,11 +104,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     }
                 }
             }
-            // recover subtask ids list in epics
-            for (Subtask subtask : super.getSubtasks()) {
-                Epic epicOfCurrentSubtask = super.getEpicById(subtask.getEpicId());
-                epicOfCurrentSubtask.addSubtask(subtask.getId());
-            }
         } catch (IOException e) {
             throw new ManagerSaveException(String.format("User-defined exception while reading file: %s", e));
         }
@@ -110,7 +112,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     private void save() throws ManagerSaveException {
         final String rowWithColumnNames = "id,type,name,status,description,epic\n";
 
-        try (FileWriter taskFileWriter = new FileWriter("tasks.csv")) {
+        try (FileWriter taskFileWriter = new FileWriter(filename)) {
             taskFileWriter.write(rowWithColumnNames);
 
             for (TaskType type : TaskType.values()) {

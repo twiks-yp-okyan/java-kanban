@@ -8,6 +8,7 @@ import task.Task;
 import task.TaskStatus;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -144,7 +145,7 @@ public class Main {
         System.out.println("##### VIEW HISTORY 4 #####");
         printViewHistory(taskManager.getHistory());
 
-        FileBackedTaskManager fileTaskManager = new FileBackedTaskManager();
+        FileBackedTaskManager fileTaskManager = new FileBackedTaskManager("tasks.csv");
         int id1 = fileTaskManager.createNewTask(new Task("Test Task", "Description for test task"));
         int id2 = fileTaskManager.createNewTask(new Task("Another test task", "Another description"));
         int id3 = fileTaskManager.createNewTask(new Task("Task 3", "Description for Task 3"));
