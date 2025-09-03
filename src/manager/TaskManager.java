@@ -1,6 +1,5 @@
 package manager;
 
-import exceptions.ManagerSaveException;
 import task.Epic;
 import task.Subtask;
 import task.Task;
@@ -13,17 +12,17 @@ public interface TaskManager {
 
     ArrayList<Subtask> getEpicSubtasks(int epicId);
 
-    int createNewTask(Task newTask) throws ManagerSaveException;
+    int createNewTask(Task newTask);
 
-    int createNewEpic(Epic newEpic) throws ManagerSaveException;
+    int createNewEpic(Epic newEpic);
 
-    Integer createNewSubtask(Subtask newSubtask) throws ManagerSaveException;
+    Integer createNewSubtask(Subtask newSubtask);
 
-    void updateTask(Task updatedTask) throws ManagerSaveException;
+    void updateTask(Task updatedTask);
 
-    void updateEpic(Epic updatedEpic) throws ManagerSaveException;
+    void updateEpic(Epic updatedEpic);
 
-    void updateSubtask(Subtask updatedSubtask) throws ManagerSaveException;
+    void updateSubtask(Subtask updatedSubtask);
 
     Task getTaskById(int id);
 
@@ -31,11 +30,11 @@ public interface TaskManager {
 
     Subtask getSubtaskById(int id);
 
-    void deleteTaskById(int id) throws ManagerSaveException;
+    void deleteTaskById(int id);
 
-    void deleteEpicById(int id) throws ManagerSaveException;
+    void deleteEpicById(int id);
 
-    void deleteSubtaskById(int id) throws ManagerSaveException;
+    void deleteSubtaskById(int id);
 
     ArrayList<Task> getTasks();
 
@@ -43,9 +42,9 @@ public interface TaskManager {
 
     ArrayList<Subtask> getSubtasks();
 
-    void deleteAllTasks() throws ManagerSaveException;
+    void deleteAllTasks();
 
-    void deleteAllSubtasks() throws ManagerSaveException;
+    void deleteAllSubtasks();
 
-    void deleteAllEpics() throws ManagerSaveException;
+    void deleteAllEpics();
 }

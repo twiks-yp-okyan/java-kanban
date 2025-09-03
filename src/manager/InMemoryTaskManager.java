@@ -1,6 +1,5 @@
 package manager;
 
-import exceptions.ManagerSaveException;
 import task.Epic;
 import task.Subtask;
 import task.Task;
@@ -16,7 +15,7 @@ public class InMemoryTaskManager implements TaskManager {
     private final HashMap<Integer, Epic> epics = new HashMap<>();
     private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
     private int idSerial = 1;
-    private final HistoryManager historyManager = Managers.getDefaultHistory();
+    protected final HistoryManager historyManager = Managers.getDefaultHistory();
 
     @Override
     public List<Task> getHistory() {
@@ -36,7 +35,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public int createNewTask(Task newTask) throws ManagerSaveException {
+    public int createNewTask(Task newTask) {
         newTask.setId(this.idSerial);
         tasks.put(newTask.getId(), newTask);
         incrementTaskId();
@@ -44,7 +43,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public int createNewEpic(Epic newEpic) throws ManagerSaveException {
+    public int createNewEpic(Epic newEpic) {
         newEpic.setId(this.idSerial);
         epics.put(newEpic.getId(), newEpic);
         incrementTaskId();
@@ -52,7 +51,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Integer createNewSubtask(Subtask newSubtask) throws ManagerSaveException {
+    public Integer createNewSubtask(Subtask newSubtask) {
         int createdSubtaskEpicId = newSubtask.getEpicId();
         Epic createdSubtaskEpic = epics.getOrDefault(createdSubtaskEpicId, null); //getEpicById(createdSubtaskEpicId); - аналогично
         // if task.Epic with provided epicId does not exist
@@ -68,20 +67,20 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateTask(Task updatedTask) throws ManagerSaveException {
+    public void updateTask(Task updatedTask) {
         int updatedTaskId = updatedTask.getId();
         tasks.put(updatedTaskId, updatedTask);
     }
 
     @Override
-    public void updateEpic(Epic updatedEpic) throws ManagerSaveException {
+    public void updateEpic(Epic updatedEpic) {
         int updatedEpicId = updatedEpic.getId();
         epics.put(updatedEpicId, updatedEpic);
         updateEpicStatus(updatedEpicId);
     }
 
     @Override
-    public void updateSubtask(Subtask updatedSubtask) throws ManagerSaveException {
+    public void updateSubtask(Subtask updatedSubtask) {
         int updatedSubtaskEpicId = updatedSubtask.getEpicId();
         Epic updatedSubtaskEpic = epics.getOrDefault(updatedSubtaskEpicId, null); // getEpicById(updatedSubtaskEpicId); - аналогично
         // if task.Epic with provided epicId does not exist
@@ -114,13 +113,13 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void deleteTaskById(int id) throws ManagerSaveException {
+    public void deleteTaskById(int id) {
         tasks.remove(id);
         historyManager.remove(id);
     }
 
     @Override
-    public void deleteEpicById(int id) throws ManagerSaveException {
+    public void deleteEpicById(int id) {
         Epic deletedEpic = epics.remove(id);
         historyManager.remove(id);
 
@@ -130,7 +129,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void deleteSubtaskById(int id) throws ManagerSaveException {
+    public void deleteSubtaskById(int id) {
         Subtask deletedSubtask = subtasks.remove(id);
         historyManager.remove(id);
 
@@ -158,7 +157,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void deleteAllTasks() throws ManagerSaveException {
+    public void deleteAllTasks() {
         for (Integer taskId : tasks.keySet()) {
             historyManager.remove(taskId);
         }
@@ -166,7 +165,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void deleteAllSubtasks() throws ManagerSaveException {
+    public void deleteAllSubtasks() {
         for (Integer taskId : subtasks.keySet()) {
             historyManager.remove(taskId);
         }
@@ -180,7 +179,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void deleteAllEpics() throws ManagerSaveException {
+    public void deleteAllEpics() {
         for (Integer taskId : epics.keySet()) {
             historyManager.remove(taskId);
         }

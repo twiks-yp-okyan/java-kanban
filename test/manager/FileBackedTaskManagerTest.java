@@ -13,6 +13,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -41,7 +42,7 @@ class FileBackedTaskManagerTest {
 
     @Test
     public void shouldLoadFromEmptyFile() throws ManagerSaveException {
-        fileTaskManager.loadFromFile(tempFile.toFile());
+        FileBackedTaskManager fileTaskManager = FileBackedTaskManager.loadFromFile(tempFile.toFile());
         assertEquals(0, fileTaskManager.getSubtasks().size() + fileTaskManager.getEpics().size() + fileTaskManager.getSubtasks().size());
     }
 
@@ -69,11 +70,7 @@ class FileBackedTaskManagerTest {
         int id2 = fileTaskManager.createNewEpic(new Epic("Epic", "Description for Epic"));
         Integer id3 = fileTaskManager.createNewSubtask(new Subtask("Subtask", "Description for Subtask", id2));
 
-        FileBackedTaskManager anotherFileTaskManager = new FileBackedTaskManager(tempFile.toString());
-        assertEquals(0, anotherFileTaskManager.getTasks().size());
-        assertEquals(0, anotherFileTaskManager.getEpics().size());
-        assertEquals(0, anotherFileTaskManager.getSubtasks().size());
-        anotherFileTaskManager.loadFromFile(tempFile.toFile());
+        FileBackedTaskManager anotherFileTaskManager = FileBackedTaskManager.loadFromFile(tempFile.toFile());
         assertEquals(3, anotherFileTaskManager.getSubtasks().size() + anotherFileTaskManager.getEpics().size() + anotherFileTaskManager.getSubtasks().size());
     }
 }

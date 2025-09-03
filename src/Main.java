@@ -156,14 +156,18 @@ public class Main {
         Integer id7 = fileTaskManager.createNewSubtask(new Subtask("Subtask 2", "Desc for subtask 2", id5));
         Integer id8 = fileTaskManager.createNewSubtask(new Subtask("Subtask #3", "Description for Subtask #3", id5));
 
+        fileTaskManager.updateSubtask(new Subtask(id8, "Subtask #3", "Description for Subtask #3", TaskStatus.IN_PROGRESS, id5));
+
         fileTaskManager.deleteTaskById(2);
         fileTaskManager.deleteSubtaskById(7);
 
         System.out.println("--------");
-        fileTaskManager.loadFromFile(new File("tasks.csv"));
-        printAllTasks(fileTaskManager.getTasks());
-        printAllEpics(fileTaskManager.getEpics());
-        printAllSubtasks(fileTaskManager.getSubtasks());
+        FileBackedTaskManager anotherFileTaskManager = FileBackedTaskManager.loadFromFile(new File("tasks.csv"));
+        printAllTasks(anotherFileTaskManager.getTasks());
+        printAllEpics(anotherFileTaskManager.getEpics());
+        printAllSubtasks(anotherFileTaskManager.getSubtasks());
+        System.out.println("--------HISTORY");
+        printViewHistory(anotherFileTaskManager.getHistory());
     }
 
     public static void printAllTasks(ArrayList<Task> allTasks) {
