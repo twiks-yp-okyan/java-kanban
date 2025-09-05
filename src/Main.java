@@ -1,3 +1,5 @@
+import exceptions.ManagerSaveException;
+import manager.FileBackedTaskManager;
 import manager.Managers;
 import manager.TaskManager;
 import task.Epic;
@@ -5,12 +7,13 @@ import task.Subtask;
 import task.Task;
 import task.TaskStatus;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ManagerSaveException {
 
         System.out.println("Поехали!");
 
@@ -141,6 +144,30 @@ public class Main {
         System.out.println("##### VIEW HISTORY 4 #####");
         printViewHistory(taskManager.getHistory());
 
+        FileBackedTaskManager fileTaskManager = new FileBackedTaskManager("tasks.csv");
+        int id1 = fileTaskManager.createNewTask(new Task("Test Task", "Description for test task"));
+        int id2 = fileTaskManager.createNewTask(new Task("Another test task", "Another description"));
+        int id3 = fileTaskManager.createNewTask(new Task("Task 3", "Description for Task 3"));
+
+        int id4 = fileTaskManager.createNewEpic(new Epic("Test Epic", "Description for test Epic"));
+        int id5 = fileTaskManager.createNewEpic(new Epic("Epic #2", "Description for Epic#2"));
+
+        Integer id6 = fileTaskManager.createNewSubtask(new Subtask("Test Subtask", "Description of test subtask", id4));
+        Integer id7 = fileTaskManager.createNewSubtask(new Subtask("Subtask 2", "Desc for subtask 2", id5));
+        Integer id8 = fileTaskManager.createNewSubtask(new Subtask("Subtask #3", "Description for Subtask #3", id5));
+
+        fileTaskManager.updateSubtask(new Subtask(id8, "Subtask #3", "Description for Subtask #3", TaskStatus.IN_PROGRESS, id5));
+
+        fileTaskManager.deleteTaskById(2);
+        fileTaskManager.deleteSubtaskById(7);
+
+        System.out.println("--------");
+        FileBackedTaskManager anotherFileTaskManager = FileBackedTaskManager.loadFromFile(new File("tasks.csv"));
+        printAllTasks(anotherFileTaskManager.getTasks());
+        printAllEpics(anotherFileTaskManager.getEpics());
+        printAllSubtasks(anotherFileTaskManager.getSubtasks());
+        System.out.println("--------HISTORY");
+        printViewHistory(anotherFileTaskManager.getHistory());
     }
 
     public static void printAllTasks(ArrayList<Task> allTasks) {

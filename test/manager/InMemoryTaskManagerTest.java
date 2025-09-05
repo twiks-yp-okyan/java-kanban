@@ -1,5 +1,6 @@
 package manager;
 
+import exceptions.ManagerSaveException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import task.Epic;
@@ -32,7 +33,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shouldAddTaskAndGetItById() {
+    public void shouldAddTaskAndGetItById() throws ManagerSaveException {
         Task task = new Task("Task 1", "Description for task 1");
 
         int taskId = taskManager.createNewTask(task);
@@ -43,7 +44,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shouldAddEpicAndGetItById() {
+    public void shouldAddEpicAndGetItById() throws ManagerSaveException {
         Epic epic = new Epic("Epic 1", "Description for Epic 1");
 
         int epicId = taskManager.createNewEpic(epic);
@@ -54,7 +55,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shouldAddSubtaskAndGetItById() {
+    public void shouldAddSubtaskAndGetItById() throws ManagerSaveException {
         int epicId = taskManager.createNewEpic(new Epic("Epic", "Description"));
         Subtask subtask = new Subtask("Subtask 1", "Description for Subtask 1", epicId);
 
@@ -66,7 +67,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shouldUpdateTaskAndCompareToOriginal() {
+    public void shouldUpdateTaskAndCompareToOriginal() throws ManagerSaveException {
         Task task = new Task("Task for update test", "Description");
         int taskId = taskManager.createNewTask(task);
         Task taskInManager = taskManager.getTaskById(taskId);
@@ -78,7 +79,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shouldUpdateEpicStatusAfterUpdateEpicsSubtaskStatus() {
+    public void shouldUpdateEpicStatusAfterUpdateEpicsSubtaskStatus() throws ManagerSaveException {
         int epicId = taskManager.createNewEpic(new Epic("Epic", "Description"));
         int subtaskId = taskManager.createNewSubtask(new Subtask("Subtask 1", "Description for Subtask 1", epicId));
         int subtask2Id = taskManager.createNewSubtask(new Subtask("Subtask 2", "Description for Subtask 2", epicId));
@@ -92,7 +93,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shouldReturnNullAndNotContainsInTasksAfterDeleteTaskById() {
+    public void shouldReturnNullAndNotContainsInTasksAfterDeleteTaskById() throws ManagerSaveException {
         int taskId = taskManager.createNewTask(new Task("Task", "Description"));
         Task task = taskManager.getTaskById(taskId);
 
@@ -104,7 +105,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shouldRevertToNewAfterDeleteAllSubtasks() {
+    public void shouldRevertToNewAfterDeleteAllSubtasks() throws ManagerSaveException {
         int epicId = taskManager.createNewEpic(new Epic("Epic", "Description"));
         int subtaskId = taskManager.createNewSubtask(new Subtask("Subtask 1", "Description for Subtask 1", epicId));
         int subtask2Id = taskManager.createNewSubtask(new Subtask("Subtask 2", "Description for Subtask 2", epicId));
@@ -128,7 +129,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shouldRemoveSubtaskIdFromEpicAfterSubtaskDelete() {
+    public void shouldRemoveSubtaskIdFromEpicAfterSubtaskDelete() throws ManagerSaveException {
         int epicId = taskManager.createNewEpic(new Epic("Epic", "Description"));
         int subtaskId = taskManager.createNewSubtask(new Subtask("Subtask 1", "Description for Subtask 1", epicId));
         int subtask2Id = taskManager.createNewSubtask(new Subtask("Subtask 2", "Description for Subtask 2", epicId));
@@ -138,7 +139,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shouldCheckTaskIdByItsSetterAndNoChangesInTaskManager() {
+    public void shouldCheckTaskIdByItsSetterAndNoChangesInTaskManager() throws ManagerSaveException {
         /*
         Виталий, привет!
         Тест сделал для проверки гипотезы, что id таска сменится и в менеджере, если сменить его через сеттер самого таска.

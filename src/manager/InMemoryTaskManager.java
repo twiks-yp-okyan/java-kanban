@@ -15,7 +15,7 @@ public class InMemoryTaskManager implements TaskManager {
     private final HashMap<Integer, Epic> epics = new HashMap<>();
     private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
     private int idSerial = 1;
-    private final HistoryManager historyManager = Managers.getDefaultHistory();
+    protected final HistoryManager historyManager = Managers.getDefaultHistory();
 
     @Override
     public List<Task> getHistory() {
@@ -186,6 +186,25 @@ public class InMemoryTaskManager implements TaskManager {
         epics.clear();
 
         deleteAllSubtasks();
+    }
+
+    // only for load from file
+    protected void addTask(Task task) {
+        if (!tasks.containsKey(task.getId())) {
+            tasks.put(task.getId(), task);
+        }
+    }
+
+    protected void addEpic(Epic epic) {
+        if (!epics.containsKey(epic.getId())) {
+            epics.put(epic.getId(), epic);
+        }
+    }
+
+    protected void addSubtask(Subtask subtask) {
+        if (!subtasks.containsKey(subtask.getId())) {
+            subtasks.put(subtask.getId(), subtask);
+        }
     }
 
     private void updateEpicStatus(int epicId) {
