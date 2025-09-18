@@ -4,6 +4,9 @@ import exceptions.ManagerSaveException;
 import task.*;
 
 import java.io.*;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -106,9 +109,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                         case TASK -> super.addTask(currentTask);
                         case EPIC -> super.addEpic((Epic) currentTask);
                         case SUBTASK -> {
-                            super.addSubtask((Subtask) currentTask);
                             Epic subtaskEpic = super.getEpicById(((Subtask) currentTask).getEpicId());
                             subtaskEpic.addSubtask(currentTask.getId());
+                            super.addSubtask((Subtask) currentTask);
                         }
                     }
                     // recover history (очень сомнительный признак просмотра из ТЗ - статус не NEW)
@@ -121,7 +124,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     private void save() {
-        final String rowWithColumnNames = "id,type,name,status,description,epic\n";
+        final String rowWithColumnNames = "id,type,name,status,description,start-time,duration,epic\n";
 
         try (FileWriter taskFileWriter = new FileWriter(filename)) {
             taskFileWriter.write(rowWithColumnNames);
@@ -143,7 +146,15 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             Subtask subtask = (Subtask) task;
             epicId = subtask.getEpicId();
         }
-        return String.format("%d,%s,%s,%s,%s,%d%n", task.getId(), type, task.getName(), task.getStatus(), task.getDescription(), epicId);
+        return String.format("%d,%s,%s,%s,%s,%s,%s,%d%n",
+                task.getId(),
+                type,
+                task.getName(),
+                task.getStatus(),
+                task.getDescription(),
+                (task.getStartTime() != null) ? task.getStartTime() : null,
+                (task.getDuration() != null) ? task.getDuration().toMinutes() : null,
+                epicId);
     }
 
     private Task taskFromCSVRow(String csvRow) {
@@ -151,11 +162,25 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         TaskType type = TaskType.valueOf(csvRowArray[1]);
         switch (type) {
             case TASK -> {
-                return new Task(Integer.parseInt(csvRowArray[0]), csvRowArray[2], csvRowArray[4], TaskStatus.valueOf(csvRowArray[3]));
+                return new Task(Integer.parseInt(csvRowArray[0]),
+                        csvRowArray[2],
+                        csvRowArray[4],
+                        LocalDateTime.parse(csvRowArray[5], DateTimeFormatter.ISO_DATE_TIME),
+                        Duration.ofMinutes(Integer.parseInt(csvRowArray[6])),
+                        TaskStatus.valueOf(csvRowArray[3]));
             } case EPIC -> {
-                return new Epic(Integer.parseInt(csvRowArray[0]), csvRowArray[2], csvRowArray[4], TaskStatus.valueOf(csvRowArray[3]));
+                return new Epic(Integer.parseInt(csvRowArray[0]),
+                        csvRowArray[2],
+                        csvRowArray[4],
+                        TaskStatus.valueOf(csvRowArray[3]));
             } case SUBTASK -> {
-                return null; //new Subtask(Integer.parseInt(csvRowArray[0]), csvRowArray[2], csvRowArray[4], TaskStatus.valueOf(csvRowArray[3]), Integer.parseInt(csvRowArray[5]));
+                return new Subtask(Integer.parseInt(csvRowArray[0]),
+                        csvRowArray[2],
+                        csvRowArray[4],
+                        LocalDateTime.parse(csvRowArray[5], DateTimeFormatter.ISO_DATE_TIME),
+                        Duration.ofMinutes(Integer.parseInt(csvRowArray[6])),
+                        TaskStatus.valueOf(csvRowArray[3]),
+                        Integer.parseInt(csvRowArray[7]));
             }
         }
         return null;

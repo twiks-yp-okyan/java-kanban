@@ -205,6 +205,7 @@ public class InMemoryTaskManager implements TaskManager {
     protected void addSubtask(Subtask subtask) {
         if (!subtasks.containsKey(subtask.getId())) {
             subtasks.put(subtask.getId(), subtask);
+            updateEpicData(subtask.getEpicId());
         }
     }
 
