@@ -19,28 +19,28 @@ public class Main {
 
         System.out.println("Поехали!");
 
-//        TaskManager taskManager = Managers.getDefault();
-//        // create tests
-//        int testTaskId = taskManager.createNewTask(new Task("Test task.Task", "Description for test task"));
-//        int anotherTestTaskId = taskManager.createNewTask(new Task("Another test task", "Another description"));
-//        int task3Id = taskManager.createNewTask(new Task("task.Task 3", "Description for task.Task 3"));
-//
-//        int testEpicId = taskManager.createNewEpic(new Epic("Test task.Epic", "Description for test task.Epic"));
-//        int epic2Id = taskManager.createNewEpic(new Epic("task.Epic #2", "Description for task.Epic#2"));
-//
-//        Integer testSubtaskId = taskManager.createNewSubtask(new Subtask("Test task.Subtask", "Description of test subtask", LocalDateTime.now(), Duration.ofMinutes(100), testEpicId));
-//        Integer subtask2Id = taskManager.createNewSubtask(new Subtask("task.Subtask 2", "Desc for subtask 2", LocalDateTime.now().minusDays(1), Duration.ofMinutes(100), testEpicId));
-//        // check create
-//        System.out.println("##### CREATE TESTS #####");
-//        printAllTasks(taskManager.getTasks());
-//        printAllEpics(taskManager.getEpics());
-//        printAllSubtasks(taskManager.getSubtasks());
+        TaskManager taskManager = Managers.getDefault();
+        // create tests
+        int testTaskId = taskManager.createNewTask(new Task("Test task.Task", "Description for test task"));
+        int anotherTestTaskId = taskManager.createNewTask(new Task("Another test task", "Another description"));
+        int task3Id = taskManager.createNewTask(new Task("task.Task 3", "Description for task.Task 3"));
 
-//        taskManager.deleteAllSubtasks();
-//        System.out.println("##### CHECK #####");
-//        printAllTasks(taskManager.getTasks());
-//        printAllEpics(taskManager.getEpics());
-//        printAllSubtasks(taskManager.getSubtasks());
+        int testEpicId = taskManager.createNewEpic(new Epic("Test task.Epic", "Description for test task.Epic"));
+        int epic2Id = taskManager.createNewEpic(new Epic("task.Epic #2", "Description for task.Epic#2"));
+
+        Integer testSubtaskId = taskManager.createNewSubtask(new Subtask("Test task.Subtask", "Description of test subtask", LocalDateTime.now(), Duration.ofMinutes(100), testEpicId));
+        Integer subtask2Id = taskManager.createNewSubtask(new Subtask("task.Subtask 2", "Desc for subtask 2", LocalDateTime.now().minusDays(1), Duration.ofMinutes(100), testEpicId));
+        // check create
+        System.out.println("##### CREATE TESTS #####");
+        printAllTasks(taskManager.getTasks());
+        printAllEpics(taskManager.getEpics());
+        printAllSubtasks(taskManager.getSubtasks());
+
+        taskManager.deleteAllSubtasks();
+        System.out.println("##### CHECK #####");
+        printAllTasks(taskManager.getTasks());
+        printAllEpics(taskManager.getEpics());
+        printAllSubtasks(taskManager.getSubtasks());
 
         // get & update tests
 //        int taskIdForUpdateId = taskManager.getTaskById(3).getId();
@@ -153,16 +153,16 @@ public class Main {
 //        printViewHistory(taskManager.getHistory());
 //
         FileBackedTaskManager fileTaskManager = new FileBackedTaskManager("tasks.csv");
-        int id1 = fileTaskManager.createNewTask(new Task("Test Task", "Description for test task", LocalDateTime.now(), Duration.ofMinutes(30)));
-        int id2 = fileTaskManager.createNewTask(new Task("Another test task", "Another description", LocalDateTime.now(), Duration.ofMinutes(30)));
-        int id3 = fileTaskManager.createNewTask(new Task("Task 3", "Description for Task 3", LocalDateTime.now(), Duration.ofMinutes(30)));
-
-        int id4 = fileTaskManager.createNewEpic(new Epic("Test Epic", "Description for test Epic"));
-        int id5 = fileTaskManager.createNewEpic(new Epic("Epic #2", "Description for Epic#2"));
-
-        Integer id6 = fileTaskManager.createNewSubtask(new Subtask("Test Subtask", "Description of test subtask", LocalDateTime.now(), Duration.ofMinutes(30), id4));
-        Integer id7 = fileTaskManager.createNewSubtask(new Subtask("Subtask 2", "Desc for subtask 2", LocalDateTime.now().minusDays(2), Duration.ofMinutes(60), id5));
-        Integer id8 = fileTaskManager.createNewSubtask(new Subtask("Subtask #3", "Description for Subtask #3", LocalDateTime.now().minusHours(10), Duration.ofMinutes(1), id5));
+        int id1 = fileTaskManager.createNewTask(new Task("Test Task", "Description for test task"));
+//        int id2 = fileTaskManager.createNewTask(new Task("Another test task", "Another description", LocalDateTime.now(), Duration.ofMinutes(30)));
+//        int id3 = fileTaskManager.createNewTask(new Task("Task 3", "Description for Task 3", LocalDateTime.now(), Duration.ofMinutes(30)));
+//
+//        int id4 = fileTaskManager.createNewEpic(new Epic("Test Epic", "Description for test Epic"));
+//        int id5 = fileTaskManager.createNewEpic(new Epic("Epic #2", "Description for Epic#2"));
+//
+//        Integer id6 = fileTaskManager.createNewSubtask(new Subtask("Test Subtask", "Description of test subtask", LocalDateTime.now(), Duration.ofMinutes(30), id4));
+//        Integer id7 = fileTaskManager.createNewSubtask(new Subtask("Subtask 2", "Desc for subtask 2", LocalDateTime.now().minusDays(2), Duration.ofMinutes(60), id5));
+//        Integer id8 = fileTaskManager.createNewSubtask(new Subtask("Subtask #3", "Description for Subtask #3", LocalDateTime.now().minusHours(10), Duration.ofMinutes(1), id5));
 
 //        fileTaskManager.updateSubtask(new Subtask(id8, "Subtask #3", "Description for Subtask #3", TaskStatus.IN_PROGRESS, id5));
 
@@ -174,8 +174,8 @@ public class Main {
         printAllTasks(anotherFileTaskManager.getTasks());
         printAllEpics(anotherFileTaskManager.getEpics());
         printAllSubtasks(anotherFileTaskManager.getSubtasks());
-        System.out.println("--------HISTORY");
-        printViewHistory(anotherFileTaskManager.getHistory());
+//        System.out.println("--------HISTORY");
+//        printViewHistory(anotherFileTaskManager.getHistory());
     }
 
     public static void printAllTasks(ArrayList<Task> allTasks) {

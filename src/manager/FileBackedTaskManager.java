@@ -165,8 +165,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 return new Task(Integer.parseInt(csvRowArray[0]),
                         csvRowArray[2],
                         csvRowArray[4],
-                        LocalDateTime.parse(csvRowArray[5], DateTimeFormatter.ISO_DATE_TIME),
-                        Duration.ofMinutes(Integer.parseInt(csvRowArray[6])),
+                        (csvRowArray[5].equals("null")) ? null : LocalDateTime.parse(csvRowArray[5], DateTimeFormatter.ISO_DATE_TIME),
+                        (csvRowArray[6].equals("null")) ? null : Duration.ofMinutes(Integer.parseInt(csvRowArray[6])),
                         TaskStatus.valueOf(csvRowArray[3]));
             } case EPIC -> {
                 return new Epic(Integer.parseInt(csvRowArray[0]),
@@ -177,8 +177,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 return new Subtask(Integer.parseInt(csvRowArray[0]),
                         csvRowArray[2],
                         csvRowArray[4],
-                        LocalDateTime.parse(csvRowArray[5], DateTimeFormatter.ISO_DATE_TIME),
-                        Duration.ofMinutes(Integer.parseInt(csvRowArray[6])),
+                        (csvRowArray[5].equals("null")) ? null : LocalDateTime.parse(csvRowArray[5], DateTimeFormatter.ISO_DATE_TIME),
+                        (csvRowArray[6].equals("null")) ? null : Duration.ofMinutes(Integer.parseInt(csvRowArray[6])),
                         TaskStatus.valueOf(csvRowArray[3]),
                         Integer.parseInt(csvRowArray[7]));
             }
