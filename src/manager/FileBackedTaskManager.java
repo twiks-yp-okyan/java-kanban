@@ -155,7 +155,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             } case EPIC -> {
                 return new Epic(Integer.parseInt(csvRowArray[0]), csvRowArray[2], csvRowArray[4], TaskStatus.valueOf(csvRowArray[3]));
             } case SUBTASK -> {
-                return new Subtask(Integer.parseInt(csvRowArray[0]), csvRowArray[2], csvRowArray[4], TaskStatus.valueOf(csvRowArray[3]), Integer.parseInt(csvRowArray[5]));
+                return null; //new Subtask(Integer.parseInt(csvRowArray[0]), csvRowArray[2], csvRowArray[4], TaskStatus.valueOf(csvRowArray[3]), Integer.parseInt(csvRowArray[5]));
             }
         }
         return null;
