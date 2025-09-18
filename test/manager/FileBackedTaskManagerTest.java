@@ -13,6 +13,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -48,9 +50,9 @@ class FileBackedTaskManagerTest {
 
     @Test
     public void shouldSaveTasksIntoFile() throws ManagerSaveException {
-        int id1 = fileTaskManager.createNewTask(new Task("Task", "Description for Task"));
+        int id1 = fileTaskManager.createNewTask(new Task("Task", "Description for Task", LocalDateTime.now(), Duration.ofMinutes(30)));
         int id2 = fileTaskManager.createNewEpic(new Epic("Epic", "Description for Epic"));
-        Integer id3 = fileTaskManager.createNewSubtask(new Subtask("Subtask", "Description for Subtask", id2));
+        Integer id3 = fileTaskManager.createNewSubtask(new Subtask("Subtask", "Description for Subtask", LocalDateTime.now(), Duration.ofMinutes(30), id2));
 
         try (BufferedReader br = new BufferedReader(new FileReader(tempFile.toString()))) {
             int linesCount = 0;
@@ -66,9 +68,9 @@ class FileBackedTaskManagerTest {
 
     @Test
     public void shouldLoadTasksFromFile() throws ManagerSaveException {
-        int id1 = fileTaskManager.createNewTask(new Task("Task", "Description for Task"));
+        int id1 = fileTaskManager.createNewTask(new Task("Task", "Description for Task", LocalDateTime.now(), Duration.ofMinutes(30)));
         int id2 = fileTaskManager.createNewEpic(new Epic("Epic", "Description for Epic"));
-        Integer id3 = fileTaskManager.createNewSubtask(new Subtask("Subtask", "Description for Subtask", id2));
+        Integer id3 = fileTaskManager.createNewSubtask(new Subtask("Subtask", "Description for Subtask", LocalDateTime.now(), Duration.ofMinutes(30), id2));
 
         FileBackedTaskManager anotherFileTaskManager = FileBackedTaskManager.loadFromFile(tempFile.toFile());
         assertEquals(3, anotherFileTaskManager.getSubtasks().size() + anotherFileTaskManager.getEpics().size() + anotherFileTaskManager.getSubtasks().size());

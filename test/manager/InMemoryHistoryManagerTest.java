@@ -4,7 +4,10 @@ import exceptions.ManagerSaveException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import task.Task;
+import task.TaskStatus;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,7 +24,7 @@ class InMemoryHistoryManagerTest {
     @Test
     public void shouldExceedTenViewsInHistory() throws ManagerSaveException {
         for (int i = 0; i < 13; i++) {
-            int taskId = taskManager.createNewTask(new Task("Task " + i, "Description for task " + i));
+            int taskId = taskManager.createNewTask(new Task(String.format("Task%d", i), String.format("Description for task%d", i), LocalDateTime.now(), Duration.ofMinutes(30)));
         }
         for (Task task : taskManager.getTasks()) {
             Task taskForHistory = taskManager.getTaskById(task.getId());
@@ -31,7 +34,7 @@ class InMemoryHistoryManagerTest {
 
     @Test
     public void shouldNotContainsDuplicates() throws ManagerSaveException {
-        int taskId = taskManager.createNewTask(new Task("Task", "Description"));
+        int taskId = taskManager.createNewTask(new Task("Task", "Description", LocalDateTime.now(), Duration.ofMinutes(30)));
         for (int i = 0; i < 13; i++) {
             Task taskForHistory = taskManager.getTaskById(taskId);
         }
@@ -41,9 +44,9 @@ class InMemoryHistoryManagerTest {
 
     @Test
     public void shouldKeepLastTaskVersionInHistory() throws ManagerSaveException {
-        int taskId = taskManager.createNewTask(new Task("Task", "Description"));
+        int taskId = taskManager.createNewTask(new Task("Task", "Description", LocalDateTime.now(), Duration.ofMinutes(30)));
         Task taskBeforeUpdate = taskManager.getTaskById(taskId);
-        taskManager.updateTask(new Task(taskId, "Task", "Description for Task after Update"));
+        taskManager.updateTask(new Task(taskId, "Task", "Description for Task after Update", LocalDateTime.now(), Duration.ofMinutes(30), TaskStatus.NEW));
         Task taskAfterUpdate = taskManager.getTaskById(taskId);
 
         assertTrue(taskManager.getHistory().contains(taskAfterUpdate));
@@ -52,8 +55,8 @@ class InMemoryHistoryManagerTest {
 
     @Test
     public void shouldRemoveFromHistoryAfterDeleteFromTaskManager() throws ManagerSaveException {
-        int taskId = taskManager.createNewTask(new Task("Task", "Description"));
-        int task2Id = taskManager.createNewTask(new Task("Task 2", "Description 2"));
+        int taskId = taskManager.createNewTask(new Task("Task", "Description", LocalDateTime.now(), Duration.ofMinutes(30)));
+        int task2Id = taskManager.createNewTask(new Task("Task 2", "Description 2", LocalDateTime.now(), Duration.ofMinutes(30)));
         Task taskForHistory = taskManager.getTaskById(taskId);
         taskForHistory = taskManager.getTaskById(task2Id);
         assertEquals(2, taskManager.getHistory().size());
