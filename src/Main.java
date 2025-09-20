@@ -12,6 +12,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class Main {
 
@@ -21,9 +22,9 @@ public class Main {
 
         TaskManager taskManager = Managers.getDefault();
         // create tests
-        int testTaskId = taskManager.createNewTask(new Task("Test task.Task", "Description for test task"));
+        int testTaskId = taskManager.createNewTask(new Task("Test task.Task", "Description for test task", LocalDateTime.now().minusHours(10), Duration.ofMinutes(24*60)));
         int anotherTestTaskId = taskManager.createNewTask(new Task("Another test task", "Another description"));
-        int task3Id = taskManager.createNewTask(new Task("task.Task 3", "Description for task.Task 3"));
+        int task3Id = taskManager.createNewTask(new Task("task.Task 3", "Description for task.Task 3", LocalDateTime.now().minusHours(48), Duration.ofMinutes(60)));
 
         int testEpicId = taskManager.createNewEpic(new Epic("Test task.Epic", "Description for test task.Epic"));
         int epic2Id = taskManager.createNewEpic(new Epic("task.Epic #2", "Description for task.Epic#2"));
@@ -36,11 +37,15 @@ public class Main {
         printAllEpics(taskManager.getEpics());
         printAllSubtasks(taskManager.getSubtasks());
 
-        taskManager.deleteAllSubtasks();
-        System.out.println("##### CHECK #####");
-        printAllTasks(taskManager.getTasks());
-        printAllEpics(taskManager.getEpics());
-        printAllSubtasks(taskManager.getSubtasks());
+        System.out.println("-----PRIORITIZED TASKS-----");
+        printPrioritizedTasks(taskManager.getPrioritizedTasks());
+
+
+//        taskManager.deleteAllSubtasks();
+//        System.out.println("##### CHECK #####");
+//        printAllTasks(taskManager.getTasks());
+//        printAllEpics(taskManager.getEpics());
+//        printAllSubtasks(taskManager.getSubtasks());
 
         // get & update tests
 //        int taskIdForUpdateId = taskManager.getTaskById(3).getId();
@@ -152,8 +157,8 @@ public class Main {
 //        System.out.println("##### VIEW HISTORY 4 #####");
 //        printViewHistory(taskManager.getHistory());
 //
-        FileBackedTaskManager fileTaskManager = new FileBackedTaskManager("tasks.csv");
-        int id1 = fileTaskManager.createNewTask(new Task("Test Task", "Description for test task"));
+//        FileBackedTaskManager fileTaskManager = new FileBackedTaskManager("tasks.csv");
+//        int id1 = fileTaskManager.createNewTask(new Task("Test Task", "Description for test task"));
 //        int id2 = fileTaskManager.createNewTask(new Task("Another test task", "Another description", LocalDateTime.now(), Duration.ofMinutes(30)));
 //        int id3 = fileTaskManager.createNewTask(new Task("Task 3", "Description for Task 3", LocalDateTime.now(), Duration.ofMinutes(30)));
 //
@@ -169,11 +174,11 @@ public class Main {
 //        fileTaskManager.deleteTaskById(2);
 //        fileTaskManager.deleteSubtaskById(7);
 //
-        System.out.println("--------");
-        FileBackedTaskManager anotherFileTaskManager = FileBackedTaskManager.loadFromFile(new File("tasks.csv"));
-        printAllTasks(anotherFileTaskManager.getTasks());
-        printAllEpics(anotherFileTaskManager.getEpics());
-        printAllSubtasks(anotherFileTaskManager.getSubtasks());
+//        System.out.println("--------");
+//        FileBackedTaskManager anotherFileTaskManager = FileBackedTaskManager.loadFromFile(new File("tasks.csv"));
+//        printAllTasks(anotherFileTaskManager.getTasks());
+//        printAllEpics(anotherFileTaskManager.getEpics());
+//        printAllSubtasks(anotherFileTaskManager.getSubtasks());
 //        System.out.println("--------HISTORY");
 //        printViewHistory(anotherFileTaskManager.getHistory());
     }
@@ -198,6 +203,12 @@ public class Main {
 
     public static void printViewHistory(List<Task> history) {
         for (Task task : history) {
+            System.out.println(task);
+        }
+    }
+
+    public static void printPrioritizedTasks(Set<Task> prioritizedTasks) {
+        for (Task task : prioritizedTasks) {
             System.out.println(task);
         }
     }

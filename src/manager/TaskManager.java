@@ -6,13 +6,14 @@ import task.Task;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public interface TaskManager {
     List<Task> getHistory();
 
     ArrayList<Subtask> getEpicSubtasks(int epicId);
 
-    int createNewTask(Task newTask);
+    Integer createNewTask(Task newTask);
 
     int createNewEpic(Epic newEpic);
 
@@ -47,4 +48,6 @@ public interface TaskManager {
     void deleteAllSubtasks();
 
     void deleteAllEpics();
+
+    Set<Task> getPrioritizedTasks();
 }

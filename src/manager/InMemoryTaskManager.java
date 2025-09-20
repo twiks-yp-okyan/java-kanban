@@ -7,7 +7,6 @@ import task.TaskStatus;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
@@ -36,11 +35,14 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public int createNewTask(Task newTask) {
-        newTask.setId(this.idSerial);
-        tasks.put(newTask.getId(), newTask);
-        incrementTaskId();
-        return newTask.getId();
+    public Integer createNewTask(Task newTask) {
+        if (this.isTaskDoNotIntersectWithOthers(newTask)) {
+            newTask.setId(this.idSerial);
+            tasks.put(newTask.getId(), newTask);
+            incrementTaskId();
+            return newTask.getId();
+        }
+        return null;
     }
 
     @Override
@@ -53,24 +55,28 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Integer createNewSubtask(Subtask newSubtask) {
-        int createdSubtaskEpicId = newSubtask.getEpicId();
-        Epic createdSubtaskEpic = epics.getOrDefault(createdSubtaskEpicId, null); //getEpicById(createdSubtaskEpicId); - аналогично
-        // if task.Epic with provided epicId does not exist
-        if (createdSubtaskEpic != null) {
-            newSubtask.setId(this.idSerial);
-            subtasks.put(newSubtask.getId(), newSubtask);
-            createdSubtaskEpic.addSubtask(newSubtask.getId());
-            updateEpicData(createdSubtaskEpicId);
-            incrementTaskId();
-            return newSubtask.getId();
+        if (this.isTaskDoNotIntersectWithOthers(newSubtask)) {
+            int createdSubtaskEpicId = newSubtask.getEpicId();
+            Epic createdSubtaskEpic = epics.getOrDefault(createdSubtaskEpicId, null); //getEpicById(createdSubtaskEpicId); - аналогично
+            // if Epic with provided epicId does not exist
+            if (createdSubtaskEpic != null) {
+                newSubtask.setId(this.idSerial);
+                subtasks.put(newSubtask.getId(), newSubtask);
+                createdSubtaskEpic.addSubtask(newSubtask.getId());
+                updateEpicData(createdSubtaskEpicId);
+                incrementTaskId();
+                return newSubtask.getId();
+            }
         }
         return null;
     }
 
     @Override
     public void updateTask(Task updatedTask) {
-        int updatedTaskId = updatedTask.getId();
-        tasks.put(updatedTaskId, updatedTask);
+        if (this.isTaskDoNotIntersectWithOthers(updatedTask)) {
+            int updatedTaskId = updatedTask.getId();
+            tasks.put(updatedTaskId, updatedTask);
+        }
     }
 
     @Override
@@ -82,13 +88,15 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateSubtask(Subtask updatedSubtask) {
-        int updatedSubtaskEpicId = updatedSubtask.getEpicId();
-        Epic updatedSubtaskEpic = epics.getOrDefault(updatedSubtaskEpicId, null); // getEpicById(updatedSubtaskEpicId); - аналогично
-        // if Epic with provided epicId does not exist
-        if (updatedSubtaskEpic != null) {
-            int updatedSubtaskId = updatedSubtask.getId();
-            subtasks.put(updatedSubtaskId, updatedSubtask);
-            updateEpicData(updatedSubtaskEpicId);
+        if (this.isTaskDoNotIntersectWithOthers(updatedSubtask)) {
+            int updatedSubtaskEpicId = updatedSubtask.getEpicId();
+            Epic updatedSubtaskEpic = epics.getOrDefault(updatedSubtaskEpicId, null); // getEpicById(updatedSubtaskEpicId); - аналогично
+            // if Epic with provided epicId does not exist
+            if (updatedSubtaskEpic != null) {
+                int updatedSubtaskId = updatedSubtask.getId();
+                subtasks.put(updatedSubtaskId, updatedSubtask);
+                updateEpicData(updatedSubtaskEpicId);
+            }
         }
     }
 
@@ -189,6 +197,21 @@ public class InMemoryTaskManager implements TaskManager {
         deleteAllSubtasks();
     }
 
+    @Override
+    public Set<Task> getPrioritizedTasks() {
+        Set<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime));
+        List<Task> tasksWithStartTime = this.getTasks().stream()
+                .filter(task -> task.getStartTime() != null)
+                .toList();
+        List<Subtask> subtasksWithStartTime = this.getSubtasks().stream()
+                .filter(subtask -> subtask.getStartTime() != null)
+                .toList();
+        prioritizedTasks.addAll(tasksWithStartTime);
+        prioritizedTasks.addAll(subtasksWithStartTime);
+
+        return prioritizedTasks;
+    }
+
     // only for load from file
     protected void addTask(Task task) {
         if (!tasks.containsKey(task.getId())) {
@@ -264,6 +287,22 @@ public class InMemoryTaskManager implements TaskManager {
         this.updateEpicStatus(epicId);
         this.defineEpicStartTime(epicId);
         this.defineEpicEndTime(epicId);
+    }
+
+    private boolean isTwoTasksIntersect(Task task1, Task task2) {
+        return task1.getStartTime() != null &&
+                task2.getStartTime() != null &&
+                !(task1.getStartTime().isAfter(task2.getStartTime().plus(task2.getDuration())) ||
+                task2.getStartTime().isAfter(task1.getStartTime().plus(task1.getDuration())));
+    }
+
+    private boolean isTaskDoNotIntersectWithOthers(Task task) {
+        Optional<Boolean> firstIntersectedTask = this.getPrioritizedTasks().stream()
+                .map(prioritizedTask -> this.isTwoTasksIntersect(task, prioritizedTask))
+                .filter(isIntersect -> isIntersect)
+                .findFirst();
+
+        return firstIntersectedTask.isEmpty();
     }
 
     private void incrementTaskId() {
