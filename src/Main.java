@@ -1,13 +1,13 @@
 import exceptions.ManagerSaveException;
-import manager.Managers;
-import manager.TaskManager;
+//import manager.Managers;
+//import manager.TaskManager;
 import task.Epic;
 import task.Subtask;
 import task.Task;
-import task.TaskStatus;
+//import task.TaskStatus;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
+//import java.time.Duration;
+//import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -18,29 +18,29 @@ public class Main {
 
         System.out.println("Поехали!");
 
-        TaskManager taskManager = Managers.getDefault();
-        // create tests
-        int testTaskId = taskManager.createNewTask(new Task("Test task.Task", "Description for test task", LocalDateTime.now().minusHours(10), Duration.ofMinutes(24*60)));
-        int anotherTestTaskId = taskManager.createNewTask(new Task("Another test task", "Another description"));
-        int task3Id = taskManager.createNewTask(new Task("task.Task 3", "Description for task.Task 3", LocalDateTime.now().minusHours(48), Duration.ofMinutes(60)));
-
-        int testEpicId = taskManager.createNewEpic(new Epic("Test task.Epic", "Description for test task.Epic"));
-        int epic2Id = taskManager.createNewEpic(new Epic("task.Epic #2", "Description for task.Epic#2"));
-
-        Integer testSubtaskId = taskManager.createNewSubtask(new Subtask("Test Subtask", "Description of test subtask", LocalDateTime.now(), Duration.ofMinutes(100), testEpicId));
-        Integer subtask2Id = taskManager.createNewSubtask(new Subtask("Subtask 2", "Desc for subtask 2", LocalDateTime.now().minusDays(5), Duration.ofMinutes(100), testEpicId));
-
-        // check create
-        System.out.println("##### CREATE TESTS #####");
-        printAllTasks(taskManager.getTasks());
-        printAllEpics(taskManager.getEpics());
-        printAllSubtasks(taskManager.getSubtasks());
-
-        taskManager.updateSubtask(new Subtask(subtask2Id, "Subtask 2", "Desc for subtask 2", LocalDateTime.now().minusDays(5), Duration.ofMinutes(100), TaskStatus.IN_PROGRESS, testEpicId));
-
-        System.out.println("-----PRIORITIZED TASKS-----");
-        printPrioritizedTasks(taskManager.getPrioritizedTasks());
-        printAllEpics(taskManager.getEpics());
+//        TaskManager taskManager = Managers.getDefault();
+//        // create tests
+//        int testTaskId = taskManager.createNewTask(new Task("Test task.Task", "Description for test task", LocalDateTime.now().minusHours(10), Duration.ofMinutes(24 * 60)));
+//        int anotherTestTaskId = taskManager.createNewTask(new Task("Another test task", "Another description"));
+//        int task3Id = taskManager.createNewTask(new Task("task.Task 3", "Description for task.Task 3", LocalDateTime.now().minusHours(48), Duration.ofMinutes(60)));
+//
+//        int testEpicId = taskManager.createNewEpic(new Epic("Test task.Epic", "Description for test task.Epic"));
+//        int epic2Id = taskManager.createNewEpic(new Epic("task.Epic #2", "Description for task.Epic#2"));
+//
+//        Integer testSubtaskId = taskManager.createNewSubtask(new Subtask("Test Subtask", "Description of test subtask", LocalDateTime.now(), Duration.ofMinutes(100), testEpicId));
+//        Integer subtask2Id = taskManager.createNewSubtask(new Subtask("Subtask 2", "Desc for subtask 2", LocalDateTime.now().minusDays(5), Duration.ofMinutes(100), testEpicId));
+//
+//        // check create
+//        System.out.println("##### CREATE TESTS #####");
+//        printAllTasks(taskManager.getTasks());
+//        printAllEpics(taskManager.getEpics());
+//        printAllSubtasks(taskManager.getSubtasks());
+//
+//        taskManager.updateSubtask(new Subtask(subtask2Id, "Subtask 2", "Desc for subtask 2", LocalDateTime.now().minusDays(5), Duration.ofMinutes(100), TaskStatus.IN_PROGRESS, testEpicId));
+//
+//        System.out.println("-----PRIORITIZED TASKS-----");
+//        printPrioritizedTasks(taskManager.getPrioritizedTasks());
+//        printAllEpics(taskManager.getEpics());
 
 
 //        taskManager.deleteAllSubtasks();
