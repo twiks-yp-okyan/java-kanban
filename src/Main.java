@@ -1,5 +1,4 @@
 import exceptions.ManagerSaveException;
-import manager.FileBackedTaskManager;
 import manager.Managers;
 import manager.TaskManager;
 import task.Epic;
@@ -7,7 +6,6 @@ import task.Subtask;
 import task.Task;
 import task.TaskStatus;
 
-import java.io.File;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -29,16 +27,20 @@ public class Main {
         int testEpicId = taskManager.createNewEpic(new Epic("Test task.Epic", "Description for test task.Epic"));
         int epic2Id = taskManager.createNewEpic(new Epic("task.Epic #2", "Description for task.Epic#2"));
 
-        Integer testSubtaskId = taskManager.createNewSubtask(new Subtask("Test task.Subtask", "Description of test subtask", LocalDateTime.now(), Duration.ofMinutes(100), testEpicId));
-        Integer subtask2Id = taskManager.createNewSubtask(new Subtask("task.Subtask 2", "Desc for subtask 2", LocalDateTime.now().minusDays(1), Duration.ofMinutes(100), testEpicId));
+        Integer testSubtaskId = taskManager.createNewSubtask(new Subtask("Test Subtask", "Description of test subtask", LocalDateTime.now(), Duration.ofMinutes(100), testEpicId));
+        Integer subtask2Id = taskManager.createNewSubtask(new Subtask("Subtask 2", "Desc for subtask 2", LocalDateTime.now().minusDays(5), Duration.ofMinutes(100), testEpicId));
+
         // check create
         System.out.println("##### CREATE TESTS #####");
         printAllTasks(taskManager.getTasks());
         printAllEpics(taskManager.getEpics());
         printAllSubtasks(taskManager.getSubtasks());
 
+        taskManager.updateSubtask(new Subtask(subtask2Id, "Subtask 2", "Desc for subtask 2", LocalDateTime.now().minusDays(5), Duration.ofMinutes(100), TaskStatus.IN_PROGRESS, testEpicId));
+
         System.out.println("-----PRIORITIZED TASKS-----");
         printPrioritizedTasks(taskManager.getPrioritizedTasks());
+        printAllEpics(taskManager.getEpics());
 
 
 //        taskManager.deleteAllSubtasks();

@@ -39,7 +39,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     @Override
     public Integer createNewSubtask(Subtask newSubtask) {
-        int subtaskId = super.createNewSubtask(newSubtask);
+        Integer subtaskId = super.createNewSubtask(newSubtask);
         save();
         return subtaskId;
     }

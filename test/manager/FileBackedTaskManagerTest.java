@@ -9,6 +9,7 @@ import task.Subtask;
 import task.Task;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -43,16 +44,16 @@ class FileBackedTaskManagerTest {
     }
 
     @Test
-    public void shouldLoadFromEmptyFile() throws ManagerSaveException {
+    public void shouldLoadFromEmptyFile() {
         FileBackedTaskManager fileTaskManager = FileBackedTaskManager.loadFromFile(tempFile.toFile());
         assertEquals(0, fileTaskManager.getSubtasks().size() + fileTaskManager.getEpics().size() + fileTaskManager.getSubtasks().size());
     }
 
     @Test
-    public void shouldSaveTasksIntoFile() throws ManagerSaveException {
+    public void shouldSaveTasksIntoFile() {
         int id1 = fileTaskManager.createNewTask(new Task("Task", "Description for Task", LocalDateTime.now(), Duration.ofMinutes(30)));
         int id2 = fileTaskManager.createNewEpic(new Epic("Epic", "Description for Epic"));
-        Integer id3 = fileTaskManager.createNewSubtask(new Subtask("Subtask", "Description for Subtask", LocalDateTime.now(), Duration.ofMinutes(30), id2));
+        Integer id3 = fileTaskManager.createNewSubtask(new Subtask("Subtask", "Description for Subtask", LocalDateTime.now().minusHours(1), Duration.ofMinutes(30), id2));
 
         try (BufferedReader br = new BufferedReader(new FileReader(tempFile.toString()))) {
             int linesCount = 0;
@@ -67,12 +68,23 @@ class FileBackedTaskManagerTest {
     }
 
     @Test
-    public void shouldLoadTasksFromFile() throws ManagerSaveException {
+    public void shouldLoadTasksFromFile() {
         int id1 = fileTaskManager.createNewTask(new Task("Task", "Description for Task", LocalDateTime.now(), Duration.ofMinutes(30)));
         int id2 = fileTaskManager.createNewEpic(new Epic("Epic", "Description for Epic"));
-        Integer id3 = fileTaskManager.createNewSubtask(new Subtask("Subtask", "Description for Subtask", LocalDateTime.now(), Duration.ofMinutes(30), id2));
+        Integer id3 = fileTaskManager.createNewSubtask(new Subtask("Subtask", "Description for Subtask", LocalDateTime.now().minusHours(1), Duration.ofMinutes(30), id2));
 
         FileBackedTaskManager anotherFileTaskManager = FileBackedTaskManager.loadFromFile(tempFile.toFile());
         assertEquals(3, anotherFileTaskManager.getSubtasks().size() + anotherFileTaskManager.getEpics().size() + anotherFileTaskManager.getSubtasks().size());
+    }
+
+    @Test
+    public void shouldThrowsExceptionWhenLoadFromNotExistingFile() {
+        assertThrows(ManagerSaveException.class,
+                () -> FileBackedTaskManager.loadFromFile(new File("random-file.csv")));
+    }
+
+    @Test
+    public void shouldDoNotThrowExceptionWhenLoadFromExistingFile() {
+        assertDoesNotThrow(() -> FileBackedTaskManager.loadFromFile(tempFile.toFile()));
     }
 }

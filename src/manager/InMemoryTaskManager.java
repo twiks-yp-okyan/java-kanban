@@ -298,6 +298,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     private boolean isTaskDoNotIntersectWithOthers(Task task) {
         Optional<Boolean> firstIntersectedTask = this.getPrioritizedTasks().stream()
+                .filter(prioritizedTask -> !prioritizedTask.equals(task)) // для update
                 .map(prioritizedTask -> this.isTwoTasksIntersect(task, prioritizedTask))
                 .filter(isIntersect -> isIntersect)
                 .findFirst();

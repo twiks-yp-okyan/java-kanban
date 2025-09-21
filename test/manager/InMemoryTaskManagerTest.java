@@ -35,7 +35,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shouldAddTaskAndGetItById() throws ManagerSaveException {
+    public void shouldAddTaskAndGetItById() {
         Task task = new Task("Task 1", "Description for task 1", LocalDateTime.now(), Duration.ofMinutes(30));
 
         int taskId = taskManager.createNewTask(task);
@@ -46,7 +46,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shouldAddEpicAndGetItById() throws ManagerSaveException {
+    public void shouldAddEpicAndGetItById() {
         Epic epic = new Epic("Epic 1", "Description for Epic 1");
 
         int epicId = taskManager.createNewEpic(epic);
@@ -57,7 +57,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shouldAddSubtaskAndGetItById() throws ManagerSaveException {
+    public void shouldAddSubtaskAndGetItById() {
         int epicId = taskManager.createNewEpic(new Epic("Epic", "Description"));
         Subtask subtask = new Subtask("Subtask 1", "Description for Subtask 1", LocalDateTime.now(), Duration.ofMinutes(30), epicId);
 
@@ -69,7 +69,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shouldUpdateTaskAndCompareToOriginal() throws ManagerSaveException {
+    public void shouldUpdateTaskAndCompareToOriginal() {
         Task task = new Task("Task for update test", "Description", LocalDateTime.now(), Duration.ofMinutes(30));
         int taskId = taskManager.createNewTask(task);
         Task taskInManager = taskManager.getTaskById(taskId);
@@ -81,13 +81,13 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shouldUpdateEpicStatusAfterUpdateEpicsSubtaskStatus() throws ManagerSaveException {
+    public void shouldUpdateEpicStatusAfterUpdateEpicsSubtaskStatus() {
         int epicId = taskManager.createNewEpic(new Epic("Epic", "Description"));
         int subtaskId = taskManager.createNewSubtask(new Subtask("Subtask 1", "Description for Subtask 1", LocalDateTime.now(), Duration.ofMinutes(30), epicId));
-        int subtask2Id = taskManager.createNewSubtask(new Subtask("Subtask 2", "Description for Subtask 2", LocalDateTime.now(), Duration.ofMinutes(30), epicId));
+        int subtask2Id = taskManager.createNewSubtask(new Subtask("Subtask 2", "Description for Subtask 2", LocalDateTime.now().minusDays(1), Duration.ofMinutes(30), epicId));
 
         taskManager.updateSubtask(new Subtask(subtaskId, "Subtask 1", "Description for Subtask 1", LocalDateTime.now(), Duration.ofMinutes(30), TaskStatus.IN_PROGRESS, epicId));
-        taskManager.updateSubtask(new Subtask(subtask2Id, "Subtask 2", "Description for Subtask 2", LocalDateTime.now(), Duration.ofMinutes(30), TaskStatus.DONE, epicId));
+        taskManager.updateSubtask(new Subtask(subtask2Id, "Subtask 2", "Description for Subtask 2", LocalDateTime.now().minusDays(1), Duration.ofMinutes(30), TaskStatus.DONE, epicId));
 
         Epic epic = taskManager.getEpicById(epicId);
 
@@ -95,7 +95,55 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shouldReturnNullAndNotContainsInTasksAfterDeleteTaskById() throws ManagerSaveException {
+    public void shouldCheckEpicNEWStatusWithNEWSubtasks() {
+        int epicId = taskManager.createNewEpic(new Epic("Epic", "Description"));
+        int subtaskId = taskManager.createNewSubtask(new Subtask("Subtask 1", "Description for Subtask 1", LocalDateTime.now(), Duration.ofMinutes(30), epicId));
+        int subtask2Id = taskManager.createNewSubtask(new Subtask("Subtask 2", "Description for Subtask 2", LocalDateTime.now().minusDays(1), Duration.ofMinutes(30), epicId));
+        Epic epic = taskManager.getEpicById(epicId);
+
+        assertEquals(TaskStatus.NEW, epic.getStatus());
+    }
+
+    @Test
+    public void shouldCheckEpicDONEStatusWithDONESubtasks() {
+        int epicId = taskManager.createNewEpic(new Epic("Epic", "Description"));
+        int subtaskId = taskManager.createNewSubtask(new Subtask("Subtask 1", "Description for Subtask 1", LocalDateTime.now(), Duration.ofMinutes(30), epicId));
+        int subtask2Id = taskManager.createNewSubtask(new Subtask("Subtask 2", "Description for Subtask 2", LocalDateTime.now().minusDays(1), Duration.ofMinutes(30), epicId));
+
+        taskManager.updateSubtask(new Subtask(subtaskId, "Subtask 1", "Description for Subtask 1", LocalDateTime.now(), Duration.ofMinutes(30), TaskStatus.DONE, epicId));
+        taskManager.updateSubtask(new Subtask(subtask2Id, "Subtask 2", "Description for Subtask 2", LocalDateTime.now().minusDays(1), Duration.ofMinutes(30), TaskStatus.DONE, epicId));
+        Epic epic = taskManager.getEpicById(epicId);
+
+        assertEquals(TaskStatus.DONE, epic.getStatus());
+    }
+
+    @Test
+    public void shouldCheckEpicStatusWithNEWAndDONESubtasks() {
+        int epicId = taskManager.createNewEpic(new Epic("Epic", "Description"));
+        int subtaskId = taskManager.createNewSubtask(new Subtask("Subtask 1", "Description for Subtask 1", LocalDateTime.now(), Duration.ofMinutes(30), epicId));
+        int subtask2Id = taskManager.createNewSubtask(new Subtask("Subtask 2", "Description for Subtask 2", LocalDateTime.now().minusDays(1), Duration.ofMinutes(30), epicId));
+
+        taskManager.updateSubtask(new Subtask(subtask2Id, "Subtask 2", "Description for Subtask 2", LocalDateTime.now().minusDays(1), Duration.ofMinutes(30), TaskStatus.DONE, epicId));
+        Epic epic = taskManager.getEpicById(epicId);
+
+        assertEquals(TaskStatus.IN_PROGRESS, epic.getStatus());
+    }
+
+    @Test
+    public void shouldCheckEpicINPROGRESSStatusWithINPROGRESSSubtasks() {
+        int epicId = taskManager.createNewEpic(new Epic("Epic", "Description"));
+        int subtaskId = taskManager.createNewSubtask(new Subtask("Subtask 1", "Description for Subtask 1", LocalDateTime.now(), Duration.ofMinutes(30), epicId));
+        int subtask2Id = taskManager.createNewSubtask(new Subtask("Subtask 2", "Description for Subtask 2", LocalDateTime.now().minusDays(1), Duration.ofMinutes(30), epicId));
+
+        taskManager.updateSubtask(new Subtask(subtaskId, "Subtask 1", "Description for Subtask 1", LocalDateTime.now(), Duration.ofMinutes(30), TaskStatus.IN_PROGRESS, epicId));
+        taskManager.updateSubtask(new Subtask(subtask2Id, "Subtask 2", "Description for Subtask 2", LocalDateTime.now().minusDays(1), Duration.ofMinutes(30), TaskStatus.IN_PROGRESS, epicId));
+        Epic epic = taskManager.getEpicById(epicId);
+
+        assertEquals(TaskStatus.IN_PROGRESS, epic.getStatus());
+    }
+
+    @Test
+    public void shouldReturnNullAndNotContainsInTasksAfterDeleteTaskById() {
         int taskId = taskManager.createNewTask(new Task("Task", "Description", LocalDateTime.now(), Duration.ofMinutes(30)));
         Task task = taskManager.getTaskById(taskId);
 
@@ -107,18 +155,18 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shouldRevertToNewAfterDeleteAllSubtasks() throws ManagerSaveException {
+    public void shouldRevertToNewAfterDeleteAllSubtasks() {
         int epicId = taskManager.createNewEpic(new Epic("Epic", "Description"));
         int subtaskId = taskManager.createNewSubtask(new Subtask("Subtask 1", "Description for Subtask 1", LocalDateTime.now(), Duration.ofMinutes(30), epicId));
-        int subtask2Id = taskManager.createNewSubtask(new Subtask("Subtask 2", "Description for Subtask 2", LocalDateTime.now(), Duration.ofMinutes(30), epicId));
+        Integer subtask2Id = taskManager.createNewSubtask(new Subtask("Subtask 2", "Description for Subtask 2", LocalDateTime.now().minusHours(1), Duration.ofMinutes(30), epicId));
 
         int epic2Id = taskManager.createNewEpic(new Epic("Epic 2", "Description for epic 2"));
-        int subtask3Id = taskManager.createNewSubtask(new Subtask("Subtask 3", "Description for Subtask 3", LocalDateTime.now(), Duration.ofMinutes(30), epic2Id));
+        Integer subtask3Id = taskManager.createNewSubtask(new Subtask("Subtask 3", "Description for Subtask 3", LocalDateTime.now().minusHours(2), Duration.ofMinutes(30), epic2Id));
         // update Subtask status -> update epic status
         taskManager.updateSubtask(new Subtask(subtaskId, "Subtask 1", "Description for Subtask 1", LocalDateTime.now(), Duration.ofMinutes(30), TaskStatus.IN_PROGRESS, epicId));
-        taskManager.updateSubtask(new Subtask(subtask2Id, "Subtask 2", "Description for Subtask 2", LocalDateTime.now(), Duration.ofMinutes(30), TaskStatus.DONE, epicId));
+        taskManager.updateSubtask(new Subtask(subtask2Id, "Subtask 2", "Description for Subtask 2", LocalDateTime.now().minusHours(1), Duration.ofMinutes(30), TaskStatus.DONE, epicId));
 
-        taskManager.updateSubtask(new Subtask(subtask3Id, "Subtask 3", "Description for Subtask 3", LocalDateTime.now(), Duration.ofMinutes(30), TaskStatus.DONE, epic2Id));
+        taskManager.updateSubtask(new Subtask(subtask3Id, "Subtask 3", "Description for Subtask 3", LocalDateTime.now().minusHours(2), Duration.ofMinutes(30), TaskStatus.DONE, epic2Id));
         // check epics statuses
         assertEquals(TaskStatus.IN_PROGRESS, taskManager.getEpicById(epicId).getStatus());
         assertEquals(TaskStatus.DONE, taskManager.getEpicById(epic2Id).getStatus());
@@ -131,17 +179,17 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shouldRemoveSubtaskIdFromEpicAfterSubtaskDelete() throws ManagerSaveException {
+    public void shouldRemoveSubtaskIdFromEpicAfterSubtaskDelete() {
         int epicId = taskManager.createNewEpic(new Epic("Epic", "Description"));
         int subtaskId = taskManager.createNewSubtask(new Subtask("Subtask 1", "Description for Subtask 1", LocalDateTime.now(), Duration.ofMinutes(30), epicId));
-        int subtask2Id = taskManager.createNewSubtask(new Subtask("Subtask 2", "Description for Subtask 2", LocalDateTime.now(), Duration.ofMinutes(30), epicId));
+        Integer subtask2Id = taskManager.createNewSubtask(new Subtask("Subtask 2", "Description for Subtask 2", LocalDateTime.now().minusHours(1), Duration.ofMinutes(30), epicId));
 
         taskManager.deleteSubtaskById(subtaskId);
         assertFalse(taskManager.getEpicSubtasks(epicId).contains(taskManager.getSubtaskById(subtaskId)));
     }
 
     @Test
-    public void shouldCheckTaskIdByItsSetterAndNoChangesInTaskManager() throws ManagerSaveException {
+    public void shouldCheckTaskIdByItsSetterAndNoChangesInTaskManager() {
         /*
         Виталий, привет!
         Тест сделал для проверки гипотезы, что id таска сменится и в менеджере, если сменить его через сеттер самого таска.
@@ -156,6 +204,14 @@ class InMemoryTaskManagerTest {
         Task taskByOldId = taskManager.getTaskById(taskId);
         Task taskByNewId = taskManager.getTaskById(999);
         assertNotEquals(taskByOldId, taskByNewId);
+    }
+
+    @Test
+    public void shouldDoNotAddTaskBecauseOfIntersection() {
+        Integer taskId = taskManager.createNewTask(new Task("Task", "Description", LocalDateTime.now(), Duration.ofMinutes(30)));
+        Integer task2Id = taskManager.createNewTask(new Task("Task", "Description", LocalDateTime.now().minusHours(1), Duration.ofMinutes(90)));
+
+        assertEquals(1, taskManager.getTasks().size());
     }
 
 }
