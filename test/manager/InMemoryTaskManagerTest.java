@@ -11,6 +11,9 @@ import task.TaskStatus;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Optional;
+import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryTaskManagerTest {
@@ -212,6 +215,18 @@ class InMemoryTaskManagerTest {
         Integer task2Id = taskManager.createNewTask(new Task("Task", "Description", LocalDateTime.now().minusHours(1), Duration.ofMinutes(90)));
 
         assertEquals(1, taskManager.getTasks().size());
+    }
+
+    @Test
+    public void shouldReturnPrioritizedTasks() {
+        Integer taskId = taskManager.createNewTask(new Task("Task", "Description", LocalDateTime.now(), Duration.ofMinutes(30)));
+        Integer task2Id = taskManager.createNewTask(new Task("Task 2", "Description 2", LocalDateTime.now().minusHours(1), Duration.ofMinutes(30)));
+        int epicId = taskManager.createNewEpic(new Epic("Epic", "Description"));
+        Integer subtaskId = taskManager.createNewSubtask(new Subtask("Subtask", "Description for Subtask", LocalDateTime.now().minusHours(5), Duration.ofMinutes(60), epicId));
+
+        Set<Task> prioritizedTasks = taskManager.getPrioritizedTasks();
+        Optional<Task> firstTask = prioritizedTasks.stream().findFirst();
+        firstTask.ifPresent(task -> assertEquals(subtaskId, task.getId()));
     }
 
 }

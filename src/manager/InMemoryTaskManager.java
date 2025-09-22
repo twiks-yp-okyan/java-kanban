@@ -16,6 +16,7 @@ public class InMemoryTaskManager implements TaskManager {
     private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
     private int idSerial = 1;
     protected final HistoryManager historyManager = Managers.getDefaultHistory();
+    private final Set<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime));
 
     @Override
     public List<Task> getHistory() {
@@ -199,7 +200,6 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Set<Task> getPrioritizedTasks() {
-        Set<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime));
         List<Task> tasksWithStartTime = this.getTasks().stream()
                 .filter(task -> task.getStartTime() != null)
                 .toList();
