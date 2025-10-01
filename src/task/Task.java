@@ -12,13 +12,13 @@ public class Task {
     protected Duration duration;
     protected LocalDateTime startTime;
 
-    public Task(String name, String description, LocalDateTime startTime, Duration duration) {
-        this.name = name;
-        this.description = description;
-        this.startTime = startTime;
-        this.duration = duration;
-        this.status = TaskStatus.NEW;
-    }
+//    public Task(String name, String description, LocalDateTime startTime, Duration duration) {
+//        this.name = name;
+//        this.description = description;
+//        this.startTime = startTime;
+//        this.duration = duration;
+//        this.status = TaskStatus.NEW;
+//    }
 
     // constructor for update Task & Subtask
     public Task(int id, String name, String description, LocalDateTime startTime, Duration duration, TaskStatus status) {
@@ -44,7 +44,7 @@ public class Task {
         this.description = description;
     }
 
-    // constructor for deserialisation fron file
+    // constructor for deserialisation from file
     public Task(int id, String name, String description, TaskStatus status) {
         this.id = id;
         this.name = name;
@@ -109,7 +109,7 @@ public class Task {
                 ", description='" + description + '\'' +
                 ", status='" + status + '\'' +
                 ", startTime='" + startTime + '\'' +
-                ", duration='" + duration + '\'' +
+                ", duration='" + duration.toMinutes() + '\'' +
                 '}';
     }
 }

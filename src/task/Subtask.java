@@ -6,10 +6,10 @@ import java.time.LocalDateTime;
 public class Subtask extends Task {
     private final int epicId;
 
-    public Subtask(String name, String description, LocalDateTime startTime, Duration duration, int epicId) {
-        super(name, description, startTime, duration);
-        this.epicId = epicId;
-    }
+//    public Subtask(String name, String description, LocalDateTime startTime, Duration duration, int epicId) {
+//        super(name, description, startTime, duration);
+//        this.epicId = epicId;
+//    }
 
     // constructor for updateSubtask
     public Subtask(int id, String name, String description, LocalDateTime startTime, Duration duration, TaskStatus status, int epicId) {
@@ -30,7 +30,7 @@ public class Subtask extends Task {
                 ", description='" + description + '\'' +
                 ", status='" + status + '\'' +
                 ", startTime='" + startTime + '\'' +
-                ", duration='" + duration + '\'' +
+                ", duration='" + duration.toMinutes() + '\'' +
                 '}';
     }
 }

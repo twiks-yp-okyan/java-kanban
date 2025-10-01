@@ -39,11 +39,12 @@ public class InMemoryTaskManager implements TaskManager {
     public Integer createNewTask(Task newTask) {
         if (this.isTaskDoNotIntersectWithOthers(newTask)) {
             newTask.setId(this.idSerial);
+            newTask.setStatus(TaskStatus.NEW);
             tasks.put(newTask.getId(), newTask);
             incrementTaskId();
             return newTask.getId();
         }
-        return null;
+        throw new NullPointerException();
     }
 
     @Override
@@ -69,14 +70,17 @@ public class InMemoryTaskManager implements TaskManager {
                 return newSubtask.getId();
             }
         }
-        return null;
+        throw new NullPointerException();
     }
 
     @Override
     public void updateTask(Task updatedTask) {
-        if (this.isTaskDoNotIntersectWithOthers(updatedTask)) {
-            int updatedTaskId = updatedTask.getId();
+        Task taskInManager = tasks.getOrDefault(updatedTask.getId(), null);
+        if (updatedTask.equals(taskInManager) && this.isTaskDoNotIntersectWithOthers(updatedTask)){
+            Integer updatedTaskId = updatedTask.getId();
             tasks.put(updatedTaskId, updatedTask);
+        } else {
+            throw new NullPointerException();
         }
     }
 
@@ -104,8 +108,12 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task getTaskById(int id) {
         Task task = tasks.getOrDefault(id, null);
-        if (task != null) historyManager.add(task);
-        return task;
+        if (task != null) {
+            historyManager.add(task);
+            return task;
+        } else {
+            throw new NullPointerException();
+        }
     }
 
     @Override
@@ -124,8 +132,10 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteTaskById(int id) {
-        tasks.remove(id);
-        historyManager.remove(id);
+        Task task = getTaskById(id);
+        tasks.remove(task.getId());
+        historyManager.remove(task.getId());
+
     }
 
     @Override
