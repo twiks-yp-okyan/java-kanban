@@ -4,7 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
 import com.google.gson.TypeAdapter;
+import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import task.TaskStatus;
 
@@ -12,14 +14,18 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GsonCreator {
     private static final GsonBuilder gsonBuilder = new GsonBuilder();
 
     public static Gson getGson() {
-        gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter())
+        gsonBuilder.serializeNulls()
+                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter())
                 .registerTypeAdapter(Duration.class, new DurationTypeAdapter())
-                .registerTypeAdapter(TaskStatus.class, new TaskStatusTypeAdapter());
+                .registerTypeAdapter(TaskStatus.class, new TaskStatusTypeAdapter())
+                .registerTypeAdapter(new TypeToken<List<Integer>>() {}.getType(), new IntegerListTypeAdapter());
 
         return gsonBuilder.create();
     }
@@ -29,7 +35,11 @@ public class GsonCreator {
 
         @Override
         public void write(JsonWriter jsonWriter, LocalDateTime localDateTime) throws IOException {
-            jsonWriter.value(localDateTime.format(timeFormatter));
+            if (localDateTime == null) {
+                jsonWriter.nullValue();
+            } else {
+                jsonWriter.value(localDateTime.format(timeFormatter));
+            }
         }
 
         @Override
@@ -41,7 +51,11 @@ public class GsonCreator {
     static class DurationTypeAdapter extends TypeAdapter<Duration> {
         @Override
         public void write(JsonWriter jsonWriter, Duration duration) throws IOException {
-            jsonWriter.value(duration.toMinutes());
+            if (duration == null) {
+                jsonWriter.nullValue();
+            } else {
+                jsonWriter.value(duration.toMinutes());
+            }
         }
 
         @Override
@@ -67,6 +81,36 @@ public class GsonCreator {
             } catch (IllegalArgumentException e) {
                 throw new JsonParseException(String.format("Invalid value %s for TaskStatus field", jsonReader.nextString()));
             }
+        }
+    }
+
+    static class IntegerListTypeAdapter extends TypeAdapter<List<Integer>> {
+        @Override
+        public void write(JsonWriter jsonWriter, List<Integer> integerList) throws IOException {
+            if (integerList == null) {
+                jsonWriter.beginArray().endArray();
+                return;
+            }
+            jsonWriter.beginArray();
+            for (Integer value : integerList) {
+                jsonWriter.value(value);
+            }
+            jsonWriter.endArray();
+        }
+
+        @Override
+        public List<Integer> read(JsonReader jsonReader) throws IOException {
+            if (jsonReader.peek() == JsonToken.NULL) {
+                jsonReader.nextNull();
+                return new ArrayList<>();
+            }
+            List<Integer> list = new ArrayList<>();
+            jsonReader.beginArray();
+            while (jsonReader.hasNext()) {
+                list.add(jsonReader.nextInt());
+            }
+            jsonReader.endArray();
+            return list;
         }
     }
 }

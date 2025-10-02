@@ -26,7 +26,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public ArrayList<Subtask> getEpicSubtasks(int epicId) {
         ArrayList<Subtask> epicSubtasks = new ArrayList<>();
-        Epic epic = epics.getOrDefault(epicId, null); //getEpicById(epicId); - пришлось заменить на метод коллекции для корректной работы истории просмотров
+        Epic epic = epics.getOrDefault(epicId, null);
         if (epic != null) {
             for (int subtaskId : epic.getSubtasksIds()) {
                 epicSubtasks.add(subtasks.get(subtaskId));
@@ -50,6 +50,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public int createNewEpic(Epic newEpic) {
         newEpic.setId(this.idSerial);
+        newEpic.setStatus(TaskStatus.NEW);
         epics.put(newEpic.getId(), newEpic);
         incrementTaskId();
         return newEpic.getId();
@@ -58,14 +59,14 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Integer createNewSubtask(Subtask newSubtask) {
         if (this.isTaskDoNotIntersectWithOthers(newSubtask)) {
-            int createdSubtaskEpicId = newSubtask.getEpicId();
-            Epic createdSubtaskEpic = epics.getOrDefault(createdSubtaskEpicId, null); //getEpicById(createdSubtaskEpicId); - аналогично
+            Epic createdSubtaskEpic = epics.getOrDefault(newSubtask.getEpicId(), null); //getEpicById(createdSubtaskEpicId); - аналогично
             // if Epic with provided epicId does not exist
             if (createdSubtaskEpic != null) {
                 newSubtask.setId(this.idSerial);
+                newSubtask.setStatus(TaskStatus.NEW);
                 subtasks.put(newSubtask.getId(), newSubtask);
                 createdSubtaskEpic.addSubtask(newSubtask.getId());
-                updateEpicData(createdSubtaskEpicId);
+                updateEpicData(newSubtask.getEpicId());
                 incrementTaskId();
                 return newSubtask.getId();
             }
@@ -77,8 +78,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void updateTask(Task updatedTask) {
         Task taskInManager = tasks.getOrDefault(updatedTask.getId(), null);
         if (updatedTask.equals(taskInManager) && this.isTaskDoNotIntersectWithOthers(updatedTask)){
-            Integer updatedTaskId = updatedTask.getId();
-            tasks.put(updatedTaskId, updatedTask);
+            tasks.put(updatedTask.getId(), updatedTask);
         } else {
             throw new NullPointerException();
         }
@@ -86,22 +86,30 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateEpic(Epic updatedEpic) {
-        int updatedEpicId = updatedEpic.getId();
-        epics.put(updatedEpicId, updatedEpic);
-        updateEpicData(updatedEpicId);
+        Epic epicInManager = epics.getOrDefault(updatedEpic.getId(), null);
+        if (updatedEpic.equals(epicInManager)) {
+            List<Integer> subtasksIds = epicInManager.getSubtasksIds(); // чтобы нельзя было изменить список сабтасков
+            int updatedEpicId = updatedEpic.getId();
+            epics.put(updatedEpicId, new Epic(updatedEpicId, updatedEpic.getName(), updatedEpic.getDescription(), subtasksIds));
+            updateEpicData(updatedEpicId);
+        } else {
+            throw new NullPointerException();
+        }
+
     }
 
     @Override
     public void updateSubtask(Subtask updatedSubtask) {
-        if (this.isTaskDoNotIntersectWithOthers(updatedSubtask)) {
-            int updatedSubtaskEpicId = updatedSubtask.getEpicId();
-            Epic updatedSubtaskEpic = epics.getOrDefault(updatedSubtaskEpicId, null); // getEpicById(updatedSubtaskEpicId); - аналогично
+        Subtask subtaskInManager = subtasks.getOrDefault(updatedSubtask.getId(), null);
+        if (updatedSubtask.equals(subtaskInManager) && this.isTaskDoNotIntersectWithOthers(updatedSubtask)) {
+            Epic updatedSubtaskEpic = epics.getOrDefault(updatedSubtask.getEpicId(), null);
             // if Epic with provided epicId does not exist
             if (updatedSubtaskEpic != null) {
-                int updatedSubtaskId = updatedSubtask.getId();
-                subtasks.put(updatedSubtaskId, updatedSubtask);
-                updateEpicData(updatedSubtaskEpicId);
+                subtasks.put(updatedSubtask.getId(), updatedSubtask);
+                updateEpicData(updatedSubtask.getEpicId());
             }
+        } else {
+            throw new NullPointerException();
         }
     }
 
@@ -119,15 +127,23 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Epic getEpicById(int id) {
         Epic epic = epics.getOrDefault(id, null);
-        if (epic != null) historyManager.add(epic);
-        return epic;
+        if (epic != null) {
+            historyManager.add(epic);
+            return epic;
+        } else {
+            throw new NullPointerException();
+        }
     }
 
     @Override
     public Subtask getSubtaskById(int id) {
         Subtask subtask = subtasks.getOrDefault(id, null);
-        if (subtask != null) historyManager.add(subtask);
-        return subtask;
+        if (subtask != null) {
+            historyManager.add(subtask);
+            return subtask;
+        } else {
+            throw new NullPointerException();
+        }
     }
 
     @Override
@@ -140,7 +156,8 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteEpicById(int id) {
-        Epic deletedEpic = epics.remove(id);
+        Epic deletedEpic = getEpicById(id);
+        epics.remove(id);
         historyManager.remove(id);
 
         for (int subtaskId : deletedEpic.getSubtasksIds()) {
@@ -150,13 +167,14 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteSubtaskById(int id) {
-        Subtask deletedSubtask = subtasks.remove(id);
-        historyManager.remove(id);
+        Subtask deletedSubtask = getSubtaskById(id);
+        subtasks.remove(deletedSubtask.getId());
+        historyManager.remove(deletedSubtask.getId());
 
         int epicId = deletedSubtask.getEpicId();
-        Epic epic = epics.getOrDefault(epicId, null); // getEpicById(epicId); - аналогично
+        Epic epic = epics.getOrDefault(epicId, null);
         if (epic != null) {
-            epic.removeSubtask(id);
+            epic.removeSubtask(deletedSubtask.getId());
             updateEpicData(epicId);
         }
     }

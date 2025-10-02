@@ -3,9 +3,10 @@ package task;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Epic extends Task {
-    private final ArrayList<Integer> subtasksIds;
+    private final List<Integer> subtasksIds;
     private LocalDateTime endTime;
 
     public Epic(String name, String description) {
@@ -14,7 +15,7 @@ public class Epic extends Task {
     }
 
     // constructor for update Epic
-    public Epic(int id, String name, String description, ArrayList<Integer> subtasksIds) {
+    public Epic(int id, String name, String description, List<Integer> subtasksIds) {
         super(id, name, description);
         this.subtasksIds = subtasksIds;
     }
@@ -36,7 +37,7 @@ public class Epic extends Task {
         subtasksIds.clear();
     }
 
-    public ArrayList<Integer> getSubtasksIds() {
+    public List<Integer> getSubtasksIds() {
         return subtasksIds;
     }
 
@@ -68,7 +69,7 @@ public class Epic extends Task {
                 ", description='" + description + '\'' +
                 ", status='" + status + '\'' +
                 ", startTime='" + startTime + '\'' +
-                ", duration='" + duration.toMinutes() + '\'' +
+                ", duration='" + duration + '\'' +
                 '}';
     }
 }

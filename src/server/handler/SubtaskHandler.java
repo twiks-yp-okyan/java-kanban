@@ -3,18 +3,19 @@ package server.handler;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
 import exceptions.ManagerSaveException;
 import manager.TaskManager;
 import server.utils.HttpStatus;
-import task.Task;
+import task.Subtask;
 
 import java.io.IOException;
 
-public class TaskHandler extends BaseHttpHandler {
+public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
     private final TaskManager taskManager;
     private final Gson gson;
 
-    public TaskHandler(TaskManager taskManager, Gson gson) {
+    public SubtaskHandler(TaskManager taskManager, Gson gson) {
         this.taskManager = taskManager;
         this.gson = gson;
     }
@@ -22,15 +23,15 @@ public class TaskHandler extends BaseHttpHandler {
     void getHandle(HttpExchange httpExchange) throws IOException {
         String[] pathParts = httpExchange.getRequestURI().getPath().split("/");
         if (pathParts.length == 2) {
-            sendText(httpExchange, HttpStatus.OK.code, gson.toJson(taskManager.getTasks()));
+            sendText(httpExchange, HttpStatus.OK.code, gson.toJson(taskManager.getSubtasks()));
         } else if (pathParts.length == 3) {
             try {
-                int taskId = Integer.parseInt(pathParts[2]);
-                sendText(httpExchange, HttpStatus.OK.code, gson.toJson(taskManager.getTaskById(taskId)));
+                int subtaskId = Integer.parseInt(pathParts[2]);
+                sendText(httpExchange, HttpStatus.OK.code, gson.toJson(taskManager.getSubtaskById(subtaskId)));
             } catch (NumberFormatException e) {
-                sendNotFound(httpExchange, String.format("Wrong task ID format: %s (%s)", pathParts[2], e.getMessage()));
+                sendNotFound(httpExchange, String.format("Wrong subtask ID format: %s (%s)", pathParts[2], e.getMessage()));
             } catch (NullPointerException e) {
-                sendBadRequest(httpExchange, String.format("There is no Task with ID = %s", pathParts[2]));
+                sendBadRequest(httpExchange, String.format("There is no Subtask with ID = %s", pathParts[2]));
             }
         } else {
             sendNotFound(httpExchange, "There is no such endpoint");
@@ -41,20 +42,25 @@ public class TaskHandler extends BaseHttpHandler {
         String[] pathParts = httpExchange.getRequestURI().getPath().split("/");
         if (pathParts.length == 2) {
             try {
-                Task task = gson.fromJson(new String(httpExchange.getRequestBody().readAllBytes(), DEFAULT_CHARSET), Task.class);
-                int taskId = task.getId();
+                Subtask subtask = gson.fromJson(new String(httpExchange.getRequestBody().readAllBytes(), DEFAULT_CHARSET), Subtask.class);
+                int subtaskId = subtask.getId();
                 String responseText;
 
-                if (taskId == 0) {
-                    taskId = taskManager.createNewTask(task);
-                    responseText = String.format("Task with ID = %d created", taskId);
+                if (subtask.getEpicId() == 0) {
+                    sendBadRequest(httpExchange, "Invalid request: epicId field cannot be null");
+                    return;
+                }
+
+                if (subtaskId == 0) {
+                    subtaskId = taskManager.createNewSubtask(subtask);
+                    responseText = String.format("Subtask with ID = %d created", subtaskId);
                 } else {
-                    if (task.getStatus() == null) {
+                    if (subtask.getStatus() == null) {
                         sendBadRequest(httpExchange, "Invalid request: status field cannot be null");
                         return;
                     } else {
-                        taskManager.updateTask(task);
-                        responseText = String.format("Task with ID = %d updated", taskId);
+                        taskManager.updateSubtask(subtask);
+                        responseText = String.format("Subtask with ID = %d updated", subtaskId);
                     }
                 }
                 sendText(httpExchange, HttpStatus.CREATED.code, responseText);
@@ -73,17 +79,17 @@ public class TaskHandler extends BaseHttpHandler {
     void deleteHandle(HttpExchange httpExchange) throws IOException {
         String[] pathParts = httpExchange.getRequestURI().getPath().split("/");
         if (pathParts.length == 2) {
-            taskManager.deleteAllTasks();
-            sendText(httpExchange, HttpStatus.OK.code, "All tasks had been deleted");
+            taskManager.deleteAllSubtasks();
+            sendText(httpExchange, HttpStatus.OK.code, "All subtasks had been deleted");
         } else if (pathParts.length == 3) {
             try {
-                int taskId = Integer.parseInt(pathParts[2]);
-                taskManager.deleteTaskById(taskId);
-                sendText(httpExchange, HttpStatus.OK.code, String.format("Task with ID = %d was deleted", taskId));
+                int subtaskId = Integer.parseInt(pathParts[2]);
+                taskManager.deleteSubtaskById(subtaskId);
+                sendText(httpExchange, HttpStatus.OK.code, String.format("Subtask with ID = %d was deleted", subtaskId));
             } catch (NumberFormatException e) {
-                sendNotFound(httpExchange, String.format("Wrong task ID format: %s.(%s)", pathParts[2], e.getMessage()));
+                sendNotFound(httpExchange, String.format("Wrong Subtask ID format: %s.(%s)", pathParts[2], e.getMessage()));
             } catch (NullPointerException e) {
-                sendBadRequest(httpExchange, String.format("There is no Task with ID = %s", pathParts[2]));
+                sendBadRequest(httpExchange, String.format("There is no Subtask with ID = %s", pathParts[2]));
             } catch (ManagerSaveException e) {
                 sendInternalError(httpExchange, e.getMessage());
             }
