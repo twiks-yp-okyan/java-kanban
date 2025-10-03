@@ -77,7 +77,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void updateTask(Task updatedTask) {
         Task taskInManager = tasks.getOrDefault(updatedTask.getId(), null);
-        if (updatedTask.equals(taskInManager) && this.isTaskDoNotIntersectWithOthers(updatedTask)){
+        if (updatedTask.equals(taskInManager) && this.isTaskDoNotIntersectWithOthers(updatedTask)) {
             tasks.put(updatedTask.getId(), updatedTask);
         } else {
             throw new NullPointerException();
