@@ -59,7 +59,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Integer createNewSubtask(Subtask newSubtask) {
         if (this.isTaskDoNotIntersectWithOthers(newSubtask)) {
-            Epic createdSubtaskEpic = epics.getOrDefault(newSubtask.getEpicId(), null); //getEpicById(createdSubtaskEpicId); - аналогично
+            Epic createdSubtaskEpic = epics.getOrDefault(newSubtask.getEpicId(), null);
             // if Epic with provided epicId does not exist
             if (createdSubtaskEpic != null) {
                 newSubtask.setId(this.idSerial);

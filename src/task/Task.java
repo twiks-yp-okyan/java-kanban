@@ -12,13 +12,13 @@ public class Task {
     protected Duration duration;
     protected LocalDateTime startTime;
 
-//    public Task(String name, String description, LocalDateTime startTime, Duration duration) {
-//        this.name = name;
-//        this.description = description;
-//        this.startTime = startTime;
-//        this.duration = duration;
-//        this.status = TaskStatus.NEW;
-//    }
+    public Task(String name, String description, LocalDateTime startTime, Duration duration) {
+        this.name = name;
+        this.description = description;
+        this.startTime = startTime;
+        this.duration = duration;
+        this.status = TaskStatus.NEW;
+    }
 
     // constructor for update Task & Subtask
     public Task(int id, String name, String description, LocalDateTime startTime, Duration duration, TaskStatus status) {

@@ -29,9 +29,9 @@ public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
                 int subtaskId = Integer.parseInt(pathParts[2]);
                 sendText(httpExchange, HttpStatus.OK.code, gson.toJson(taskManager.getSubtaskById(subtaskId)));
             } catch (NumberFormatException e) {
-                sendNotFound(httpExchange, String.format("Wrong subtask ID format: %s (%s)", pathParts[2], e.getMessage()));
+                sendBadRequest(httpExchange, String.format("Wrong subtask ID format: %s (%s)", pathParts[2], e.getMessage()));
             } catch (NullPointerException e) {
-                sendBadRequest(httpExchange, String.format("There is no Subtask with ID = %s", pathParts[2]));
+                sendNotFound(httpExchange, String.format("There is no Subtask with ID = %s", pathParts[2]));
             }
         } else {
             sendNotFound(httpExchange, "There is no such endpoint");
@@ -87,9 +87,9 @@ public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
                 taskManager.deleteSubtaskById(subtaskId);
                 sendText(httpExchange, HttpStatus.OK.code, String.format("Subtask with ID = %d was deleted", subtaskId));
             } catch (NumberFormatException e) {
-                sendNotFound(httpExchange, String.format("Wrong Subtask ID format: %s.(%s)", pathParts[2], e.getMessage()));
+                sendBadRequest(httpExchange, String.format("Wrong Subtask ID format: %s.(%s)", pathParts[2], e.getMessage()));
             } catch (NullPointerException e) {
-                sendBadRequest(httpExchange, String.format("There is no Subtask with ID = %s", pathParts[2]));
+                sendNotFound(httpExchange, String.format("There is no Subtask with ID = %s", pathParts[2]));
             } catch (ManagerSaveException e) {
                 sendInternalError(httpExchange, e.getMessage());
             }

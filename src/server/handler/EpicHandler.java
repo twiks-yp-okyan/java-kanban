@@ -29,9 +29,9 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
                 int epicId = Integer.parseInt(pathParts[2]);
                 sendText(httpExchange, HttpStatus.OK.code, gson.toJson(taskManager.getEpicById(epicId)));
             } catch (NumberFormatException e) {
-                sendNotFound(httpExchange, String.format("Wrong epic ID format: %s (%s)", pathParts[2], e.getMessage()));
+                sendBadRequest(httpExchange, String.format("Wrong epic ID format: %s (%s)", pathParts[2], e.getMessage()));
             } catch (NullPointerException e) {
-                sendBadRequest(httpExchange, String.format("There is no Epic with ID = %s", pathParts[2]));
+                sendNotFound(httpExchange, String.format("There is no Epic with ID = %s", pathParts[2]));
             }
         } else {
             sendNotFound(httpExchange, "There is no such endpoint");
@@ -80,9 +80,9 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
                 taskManager.deleteEpicById(epicId);
                 sendText(httpExchange, HttpStatus.OK.code, String.format("Epic with ID = %d was deleted", epicId));
             } catch (NumberFormatException e) {
-                sendNotFound(httpExchange, String.format("Wrong epic ID format: %s.(%s)", pathParts[2], e.getMessage()));
+                sendBadRequest(httpExchange, String.format("Wrong epic ID format: %s.(%s)", pathParts[2], e.getMessage()));
             } catch (NullPointerException e) {
-                sendBadRequest(httpExchange, String.format("There is no Epic with ID = %s", pathParts[2]));
+                sendNotFound(httpExchange, String.format("There is no Epic with ID = %s", pathParts[2]));
             } catch (ManagerSaveException e) {
                 sendInternalError(httpExchange, e.getMessage());
             }

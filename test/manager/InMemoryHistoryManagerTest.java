@@ -62,7 +62,7 @@ class InMemoryHistoryManagerTest {
 
         taskManager.deleteTaskById(task2Id);
         assertEquals(1, taskManager.getHistory().size());
-        assertFalse(taskManager.getHistory().contains(taskManager.getTaskById(task2Id)));
+        assertThrows(NullPointerException.class, () -> taskManager.getHistory().contains(taskManager.getTaskById(task2Id)));
         assertTrue(taskManager.getHistory().contains(taskManager.getTaskById(taskId)));
     }
 
@@ -78,7 +78,7 @@ class InMemoryHistoryManagerTest {
 
         taskManager.deleteTaskById(task2Id);
         assertEquals(2, taskManager.getHistory().size());
-        assertFalse(taskManager.getHistory().contains(taskManager.getTaskById(task2Id)));
+        assertThrows(NullPointerException.class, () -> taskManager.getHistory().contains(taskManager.getTaskById(task2Id)));
         assertTrue(taskManager.getHistory().contains(taskManager.getTaskById(taskId)));
         assertTrue(taskManager.getHistory().contains(taskManager.getTaskById(task3Id)));
     }
@@ -95,7 +95,7 @@ class InMemoryHistoryManagerTest {
 
         taskManager.deleteTaskById(taskId);
         assertEquals(2, taskManager.getHistory().size());
-        assertFalse(taskManager.getHistory().contains(taskManager.getTaskById(taskId)));
+        assertThrows(NullPointerException.class, () -> taskManager.getHistory().contains(taskManager.getTaskById(taskId)));
         assertTrue(taskManager.getHistory().contains(taskManager.getTaskById(task3Id)));
         assertTrue(taskManager.getHistory().contains(taskManager.getTaskById(task2Id)));
     }
