@@ -1,5 +1,7 @@
 package manager;
 
+import exceptions.NotAcceptedTaskException;
+import exceptions.NotFoundTaskException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import task.Epic;
@@ -153,7 +155,7 @@ class InMemoryTaskManagerTest {
         ArrayList<Task> allTasks = taskManager.getTasks();
         assertFalse(allTasks.contains(task));
 
-        assertThrows(NullPointerException.class, () -> taskManager.getTaskById(taskId));
+        assertThrows(NotFoundTaskException.class, () -> taskManager.getTaskById(taskId));
     }
 
     @Test
@@ -190,28 +192,12 @@ class InMemoryTaskManagerTest {
         assertFalse(taskManager.getEpicSubtasks(epicId).contains(subtaskId));
     }
 
-//    @Test
-//    public void shouldCheckTaskIdByItsSetterAndNoChangesInTaskManager() {
-//        /*
-//        Виталий, привет!
-//        Тест сделал для проверки гипотезы, что id таска сменится и в менеджере, если сменить его через сеттер самого таска.
-//        Мне кажется это вообще стремным, но пока идей по исправлению, кроме как переписать весь менеджер, нет))
-//        Можешь пожалуйста как-то прокомментировать этот момент?
-//         */
-//        int taskId = taskManager.createNewTask(new Task("Task", "Description", LocalDateTime.now(), Duration.ofMinutes(30)));
-//        Task task = taskManager.getTaskById(taskId);
-//        task.setId(999);
-//        assertTrue(taskManager.getTasks().contains(task));
-//
-//        assertNotEquals(taskManager.getTaskById(taskId), task);
-//    }
-
     @Test
     public void shouldDoNotAddTaskBecauseOfIntersection() {
         Integer taskId = taskManager.createNewTask(new Task("Task", "Description", LocalDateTime.now(), Duration.ofMinutes(30)));
         try {
             Integer task2Id = taskManager.createNewTask(new Task("Task", "Description", LocalDateTime.now().minusHours(1), Duration.ofMinutes(90)));
-        } catch (NullPointerException e) {
+        } catch (NotAcceptedTaskException e) {
             assertEquals(1, taskManager.getTasks().size());
         }
     }

@@ -3,6 +3,7 @@ package server;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
+import exceptions.NotFoundTaskException;
 import manager.Managers;
 import manager.TaskManager;
 import org.junit.jupiter.api.AfterEach;
@@ -111,7 +112,7 @@ public class HttpTaskManagerTasksTest {
 
         assertEquals(HttpStatus.OK.code, response.statusCode());
         assertEquals(0, taskManager.getTasks().size());
-        assertThrows(NullPointerException.class, () -> taskManager.getTaskById(taskId));
+        assertThrows(NotFoundTaskException.class, () -> taskManager.getTaskById(taskId));
     }
 
     @Test

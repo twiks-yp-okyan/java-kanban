@@ -1,6 +1,7 @@
 package server;
 
 import com.google.gson.Gson;
+import exceptions.NotFoundTaskException;
 import manager.Managers;
 import manager.TaskManager;
 import org.junit.jupiter.api.AfterEach;
@@ -57,9 +58,9 @@ public class HttpTaskManagerEpicsTest {
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(HttpStatus.OK.code, response.statusCode());
-        assertThrows(NullPointerException.class, () -> taskManager.getEpicById(epicId));
-        assertThrows(NullPointerException.class, () -> taskManager.getSubtaskById(subtaskId));
-        assertThrows(NullPointerException.class, () -> taskManager.getSubtaskById(subtask1Id));
-        assertThrows(NullPointerException.class, () -> taskManager.getSubtaskById(subtask2Id));
+        assertThrows(NotFoundTaskException.class, () -> taskManager.getEpicById(epicId));
+        assertThrows(NotFoundTaskException.class, () -> taskManager.getSubtaskById(subtaskId));
+        assertThrows(NotFoundTaskException.class, () -> taskManager.getSubtaskById(subtask1Id));
+        assertThrows(NotFoundTaskException.class, () -> taskManager.getSubtaskById(subtask2Id));
     }
 }

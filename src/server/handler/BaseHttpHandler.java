@@ -33,7 +33,7 @@ public abstract class BaseHttpHandler implements HttpHandler {
                 deleteHandle(httpExchange);
                 break;
             default:
-                System.out.println("Nachalnika ne rugaysya");
+                sendMethodNotAllowed(httpExchange, "Method not allowed");
         }
     }
 
@@ -51,11 +51,10 @@ public abstract class BaseHttpHandler implements HttpHandler {
         }
     }
 
-    void sendHasOverlaps(HttpExchange httpExchange) throws IOException {
-        String responseText = "Task overlaps with existed tasks or does not exist for update";
+    void sendHasOverlaps(HttpExchange httpExchange, String text) throws IOException {
         httpExchange.sendResponseHeaders(HttpStatus.NOT_ACCEPTABLE.code, 0);
         try (OutputStream os = httpExchange.getResponseBody()) {
-            os.write(responseText.getBytes());
+            os.write(text.getBytes());
         }
     }
 
@@ -68,6 +67,13 @@ public abstract class BaseHttpHandler implements HttpHandler {
 
     void sendInternalError(HttpExchange httpExchange, String text) throws IOException {
         httpExchange.sendResponseHeaders(HttpStatus.INTERNAL_ERROR.code, 0);
+        try (OutputStream os = httpExchange.getResponseBody()) {
+            os.write(text.getBytes());
+        }
+    }
+
+    void sendMethodNotAllowed(HttpExchange httpExchange, String text) throws IOException {
+        httpExchange.sendResponseHeaders(HttpStatus.NOT_ALLOWED.code, 0);
         try (OutputStream os = httpExchange.getResponseBody()) {
             os.write(text.getBytes());
         }

@@ -1,6 +1,7 @@
 package server;
 
 import com.google.gson.Gson;
+import exceptions.NotFoundTaskException;
 import manager.Managers;
 import manager.TaskManager;
 import org.junit.jupiter.api.AfterEach;
@@ -75,7 +76,7 @@ public class HttpTaskManagerSubtasksTest {
 
         assertEquals(HttpStatus.OK.code, response.statusCode());
         assertEquals(0, taskManager.getEpicById(1).getSubtasksIds().size());
-        assertThrows(NullPointerException.class, () -> taskManager.getSubtaskById(subtaskId));
+        assertThrows(NotFoundTaskException.class, () -> taskManager.getSubtaskById(subtaskId));
     }
 
     @Test

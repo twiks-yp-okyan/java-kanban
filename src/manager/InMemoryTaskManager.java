@@ -1,5 +1,7 @@
 package manager;
 
+import exceptions.NotAcceptedTaskException;
+import exceptions.NotFoundTaskException;
 import task.Epic;
 import task.Subtask;
 import task.Task;
@@ -44,7 +46,8 @@ public class InMemoryTaskManager implements TaskManager {
             incrementTaskId();
             return newTask.getId();
         }
-        throw new NullPointerException();
+        throw new NotAcceptedTaskException(String.format("Cannot create Task with ID = %d because of interception " +
+                "with other tasks in Manager", newTask.getId()));
     }
 
     @Override
@@ -71,7 +74,8 @@ public class InMemoryTaskManager implements TaskManager {
                 return newSubtask.getId();
             }
         }
-        throw new NullPointerException();
+        throw new NotAcceptedTaskException(String.format("Cannot create Subtask with ID = %d because of interception " +
+                "with other tasks in Manager", newSubtask.getId()));
     }
 
     @Override
@@ -80,7 +84,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (updatedTask.equals(taskInManager) && this.isTaskDoNotIntersectWithOthers(updatedTask)) {
             tasks.put(updatedTask.getId(), updatedTask);
         } else {
-            throw new NullPointerException();
+            throw new NotAcceptedTaskException("This Task is not in Manager yet or intersect with others");
         }
     }
 
@@ -93,7 +97,8 @@ public class InMemoryTaskManager implements TaskManager {
             epics.put(updatedEpicId, new Epic(updatedEpicId, updatedEpic.getName(), updatedEpic.getDescription(), subtasksIds));
             updateEpicData(updatedEpicId);
         } else {
-            throw new NullPointerException();
+            throw new NotAcceptedTaskException("This Epic is not in Manager");
+
         }
 
     }
@@ -109,7 +114,7 @@ public class InMemoryTaskManager implements TaskManager {
                 updateEpicData(updatedSubtask.getEpicId());
             }
         } else {
-            throw new NullPointerException();
+            throw new NotAcceptedTaskException("This Subtask is not in Manager yet or intersect with others");
         }
     }
 
@@ -120,7 +125,7 @@ public class InMemoryTaskManager implements TaskManager {
             historyManager.add(task);
             return task;
         } else {
-            throw new NullPointerException();
+            throw new NotFoundTaskException(String.format("There is no Task with ID = %d in Manager", id));
         }
     }
 
@@ -131,7 +136,7 @@ public class InMemoryTaskManager implements TaskManager {
             historyManager.add(epic);
             return epic;
         } else {
-            throw new NullPointerException();
+            throw new NotFoundTaskException(String.format("There is no Epic with ID = %d in Manager", id));
         }
     }
 
@@ -142,7 +147,7 @@ public class InMemoryTaskManager implements TaskManager {
             historyManager.add(subtask);
             return subtask;
         } else {
-            throw new NullPointerException();
+            throw new NotFoundTaskException(String.format("There is no Subtask with ID = %d in Manager", id));
         }
     }
 
