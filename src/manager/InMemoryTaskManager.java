@@ -1,5 +1,7 @@
 package manager;
 
+import exceptions.NotAcceptedTaskException;
+import exceptions.NotFoundTaskException;
 import task.Epic;
 import task.Subtask;
 import task.Task;
@@ -26,7 +28,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public ArrayList<Subtask> getEpicSubtasks(int epicId) {
         ArrayList<Subtask> epicSubtasks = new ArrayList<>();
-        Epic epic = epics.getOrDefault(epicId, null); //getEpicById(epicId); - пришлось заменить на метод коллекции для корректной работы истории просмотров
+        Epic epic = epics.getOrDefault(epicId, null);
         if (epic != null) {
             for (int subtaskId : epic.getSubtasksIds()) {
                 epicSubtasks.add(subtasks.get(subtaskId));
@@ -39,16 +41,19 @@ public class InMemoryTaskManager implements TaskManager {
     public Integer createNewTask(Task newTask) {
         if (this.isTaskDoNotIntersectWithOthers(newTask)) {
             newTask.setId(this.idSerial);
+            newTask.setStatus(TaskStatus.NEW);
             tasks.put(newTask.getId(), newTask);
             incrementTaskId();
             return newTask.getId();
         }
-        return null;
+        throw new NotAcceptedTaskException(String.format("Cannot create Task with ID = %d because of interception " +
+                "with other tasks in Manager", newTask.getId()));
     }
 
     @Override
     public int createNewEpic(Epic newEpic) {
         newEpic.setId(this.idSerial);
+        newEpic.setStatus(TaskStatus.NEW);
         epics.put(newEpic.getId(), newEpic);
         incrementTaskId();
         return newEpic.getId();
@@ -57,80 +62,107 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Integer createNewSubtask(Subtask newSubtask) {
         if (this.isTaskDoNotIntersectWithOthers(newSubtask)) {
-            int createdSubtaskEpicId = newSubtask.getEpicId();
-            Epic createdSubtaskEpic = epics.getOrDefault(createdSubtaskEpicId, null); //getEpicById(createdSubtaskEpicId); - аналогично
+            Epic createdSubtaskEpic = epics.getOrDefault(newSubtask.getEpicId(), null);
             // if Epic with provided epicId does not exist
             if (createdSubtaskEpic != null) {
                 newSubtask.setId(this.idSerial);
+                newSubtask.setStatus(TaskStatus.NEW);
                 subtasks.put(newSubtask.getId(), newSubtask);
                 createdSubtaskEpic.addSubtask(newSubtask.getId());
-                updateEpicData(createdSubtaskEpicId);
+                updateEpicData(newSubtask.getEpicId());
                 incrementTaskId();
                 return newSubtask.getId();
             }
         }
-        return null;
+        throw new NotAcceptedTaskException(String.format("Cannot create Subtask with ID = %d because of interception " +
+                "with other tasks in Manager", newSubtask.getId()));
     }
 
     @Override
     public void updateTask(Task updatedTask) {
-        if (this.isTaskDoNotIntersectWithOthers(updatedTask)) {
-            int updatedTaskId = updatedTask.getId();
-            tasks.put(updatedTaskId, updatedTask);
+        Task taskInManager = tasks.getOrDefault(updatedTask.getId(), null);
+        if (updatedTask.equals(taskInManager) && this.isTaskDoNotIntersectWithOthers(updatedTask)) {
+            tasks.put(updatedTask.getId(), updatedTask);
+        } else {
+            throw new NotAcceptedTaskException("This Task is not in Manager yet or intersect with others");
         }
     }
 
     @Override
     public void updateEpic(Epic updatedEpic) {
-        int updatedEpicId = updatedEpic.getId();
-        epics.put(updatedEpicId, updatedEpic);
-        updateEpicData(updatedEpicId);
+        Epic epicInManager = epics.getOrDefault(updatedEpic.getId(), null);
+        if (updatedEpic.equals(epicInManager)) {
+            List<Integer> subtasksIds = epicInManager.getSubtasksIds(); // чтобы нельзя было изменить список сабтасков
+            int updatedEpicId = updatedEpic.getId();
+            epics.put(updatedEpicId, new Epic(updatedEpicId, updatedEpic.getName(), updatedEpic.getDescription(), subtasksIds));
+            updateEpicData(updatedEpicId);
+        } else {
+            throw new NotAcceptedTaskException("This Epic is not in Manager");
+
+        }
+
     }
 
     @Override
     public void updateSubtask(Subtask updatedSubtask) {
-        if (this.isTaskDoNotIntersectWithOthers(updatedSubtask)) {
-            int updatedSubtaskEpicId = updatedSubtask.getEpicId();
-            Epic updatedSubtaskEpic = epics.getOrDefault(updatedSubtaskEpicId, null); // getEpicById(updatedSubtaskEpicId); - аналогично
+        Subtask subtaskInManager = subtasks.getOrDefault(updatedSubtask.getId(), null);
+        if (updatedSubtask.equals(subtaskInManager) && this.isTaskDoNotIntersectWithOthers(updatedSubtask)) {
+            Epic updatedSubtaskEpic = epics.getOrDefault(updatedSubtask.getEpicId(), null);
             // if Epic with provided epicId does not exist
             if (updatedSubtaskEpic != null) {
-                int updatedSubtaskId = updatedSubtask.getId();
-                subtasks.put(updatedSubtaskId, updatedSubtask);
-                updateEpicData(updatedSubtaskEpicId);
+                subtasks.put(updatedSubtask.getId(), updatedSubtask);
+                updateEpicData(updatedSubtask.getEpicId());
             }
+        } else {
+            throw new NotAcceptedTaskException("This Subtask is not in Manager yet or intersect with others");
         }
     }
 
     @Override
     public Task getTaskById(int id) {
         Task task = tasks.getOrDefault(id, null);
-        if (task != null) historyManager.add(task);
-        return task;
+        if (task != null) {
+            historyManager.add(task);
+            return task;
+        } else {
+            throw new NotFoundTaskException(String.format("There is no Task with ID = %d in Manager", id));
+        }
     }
 
     @Override
     public Epic getEpicById(int id) {
         Epic epic = epics.getOrDefault(id, null);
-        if (epic != null) historyManager.add(epic);
-        return epic;
+        if (epic != null) {
+            historyManager.add(epic);
+            return epic;
+        } else {
+            throw new NotFoundTaskException(String.format("There is no Epic with ID = %d in Manager", id));
+        }
     }
 
     @Override
     public Subtask getSubtaskById(int id) {
         Subtask subtask = subtasks.getOrDefault(id, null);
-        if (subtask != null) historyManager.add(subtask);
-        return subtask;
+        if (subtask != null) {
+            historyManager.add(subtask);
+            return subtask;
+        } else {
+            throw new NotFoundTaskException(String.format("There is no Subtask with ID = %d in Manager", id));
+        }
     }
 
     @Override
     public void deleteTaskById(int id) {
-        tasks.remove(id);
-        historyManager.remove(id);
+        Task task = getTaskById(id);
+        tasks.remove(task.getId());
+        historyManager.remove(task.getId());
+
     }
 
     @Override
     public void deleteEpicById(int id) {
-        Epic deletedEpic = epics.remove(id);
+        Epic deletedEpic = getEpicById(id);
+        epics.remove(id);
         historyManager.remove(id);
 
         for (int subtaskId : deletedEpic.getSubtasksIds()) {
@@ -140,13 +172,14 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteSubtaskById(int id) {
-        Subtask deletedSubtask = subtasks.remove(id);
-        historyManager.remove(id);
+        Subtask deletedSubtask = getSubtaskById(id);
+        subtasks.remove(deletedSubtask.getId());
+        historyManager.remove(deletedSubtask.getId());
 
         int epicId = deletedSubtask.getEpicId();
-        Epic epic = epics.getOrDefault(epicId, null); // getEpicById(epicId); - аналогично
+        Epic epic = epics.getOrDefault(epicId, null);
         if (epic != null) {
-            epic.removeSubtask(id);
+            epic.removeSubtask(deletedSubtask.getId());
             updateEpicData(epicId);
         }
     }

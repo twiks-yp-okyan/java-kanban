@@ -1,6 +1,7 @@
 package manager;
 
 import exceptions.ManagerSaveException;
+import exceptions.NotFoundTaskException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import task.Task;
@@ -62,7 +63,7 @@ class InMemoryHistoryManagerTest {
 
         taskManager.deleteTaskById(task2Id);
         assertEquals(1, taskManager.getHistory().size());
-        assertFalse(taskManager.getHistory().contains(taskManager.getTaskById(task2Id)));
+        assertThrows(NotFoundTaskException.class, () -> taskManager.getHistory().contains(taskManager.getTaskById(task2Id)));
         assertTrue(taskManager.getHistory().contains(taskManager.getTaskById(taskId)));
     }
 
@@ -78,7 +79,7 @@ class InMemoryHistoryManagerTest {
 
         taskManager.deleteTaskById(task2Id);
         assertEquals(2, taskManager.getHistory().size());
-        assertFalse(taskManager.getHistory().contains(taskManager.getTaskById(task2Id)));
+        assertThrows(NotFoundTaskException.class, () -> taskManager.getHistory().contains(taskManager.getTaskById(task2Id)));
         assertTrue(taskManager.getHistory().contains(taskManager.getTaskById(taskId)));
         assertTrue(taskManager.getHistory().contains(taskManager.getTaskById(task3Id)));
     }
@@ -95,7 +96,7 @@ class InMemoryHistoryManagerTest {
 
         taskManager.deleteTaskById(taskId);
         assertEquals(2, taskManager.getHistory().size());
-        assertFalse(taskManager.getHistory().contains(taskManager.getTaskById(taskId)));
+        assertThrows(NotFoundTaskException.class, () -> taskManager.getHistory().contains(taskManager.getTaskById(taskId)));
         assertTrue(taskManager.getHistory().contains(taskManager.getTaskById(task3Id)));
         assertTrue(taskManager.getHistory().contains(taskManager.getTaskById(task2Id)));
     }

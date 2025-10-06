@@ -44,7 +44,7 @@ public class Task {
         this.description = description;
     }
 
-    // constructor for deserialisation fron file
+    // constructor for deserialisation from file
     public Task(int id, String name, String description, TaskStatus status) {
         this.id = id;
         this.name = name;
@@ -109,7 +109,7 @@ public class Task {
                 ", description='" + description + '\'' +
                 ", status='" + status + '\'' +
                 ", startTime='" + startTime + '\'' +
-                ", duration='" + duration + '\'' +
+                ", duration='" + duration.toMinutes() + '\'' +
                 '}';
     }
 }
